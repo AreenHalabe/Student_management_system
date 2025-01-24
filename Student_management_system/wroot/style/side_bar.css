@@ -1,0 +1,74 @@
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+  }
+  
+  html {
+      position: relative;
+      min-height: 100%;
+  }
+  
+  body {
+    margin-bottom: 60px;
+    
+    
+  }
+  
+  
+  #wrapper {
+      display: flex;
+      flex-direction: row;
+    gap:20%;
+  
+  }
+  
+  
+  .sidebar {
+      min-width: 250px;
+      background: #2e59d9; /* Sidebar background color */
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: fixed;
+  }
+  
+      .sidebar > li {
+          padding: 5px;
+      }
+  
+  .content-wrapper {
+      padding: 20px;
+      flex-grow: 1;
+  }
+  
+  .sidebar .nav-link {
+      color: #ffffff;
+  }
+  
+      .sidebar .nav-link:hover {
+          background: #1e3d73;
+      }
+  
+  
+  
+  
+  
+  .submenu {
+      padding-left: 20px; /* Indent submenu items */
+  }
+  
+      .submenu .nav-link {
+          color: #ffffff;
+      }
+  
+          .submenu .nav-link:hover {
+              background-color: #1e3d73;
+          }
+  
+  .d-none {
+      display: none !important;
+  }
+  
+  .sidebar .nav-item.mt-auto {
+      margin-top: auto; /* Push to the bottom */
+  }
+  
