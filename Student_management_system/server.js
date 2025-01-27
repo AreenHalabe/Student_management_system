@@ -1,18 +1,21 @@
 import express from "express";
  import {connectToDB} from "./DataBaseConnections/dbconnection.js";
+import bodyParser from "body-parser";
+import cors from "cors";
+import { StudentRoute } from "./routes/studentRoute.js";
 
 const app = express();
 const port  = 3000;
 
 let server;
-
-// Middleware for parsing JSON
+app.use(bodyParser.json());
 app.use(express.json());
 
-// Example route
-app.get("/", (req, res) => {
-  res.send("Hello from the server!");
-});
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
+app.use(StudentRoute);
 
 
 
@@ -24,7 +27,6 @@ connectToDB().then(()=>{
 }).catch((err) => console.log(err));
 
 
-// Gracefully shut down the server when needed
 process.on('SIGTERM', () => {
   server.close(() => {
     console.log('Server closed');
