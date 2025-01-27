@@ -12,11 +12,20 @@ export const AllStudentsByClassAndSection = async(req , res)=>{
             }
         );
 
-        res.status(StatusCode.Ok).send(students);
+        
+        if(students.length != 0){
+            res.status(StatusCode.Ok).send(students);
+        }
+        else{
+            res.status(StatusCode.BadRequst).send(`لا يوجد صف (${classs}) مع شعبه (${section})`);
+        }
+
+        
+       
 
     }
-    catch (e) {
-        res.status(StatusCode.ServerError).send("Server busy try again later");
+    catch (Error) {
+        res.status(StatusCode.BadRequst).send(Error);
     }
 };
 
@@ -52,14 +61,14 @@ export const DeleteStudent = async(req , res)=>{
     try{
         const DeleteStudent = await Student.deleteOne({_id : id});
         if (DeleteStudent.deletedCount != 0) {
-            return res.status(StatusCode.Ok).send("deleted successfuly");
+            return res.status(StatusCode.Ok).send("تم حذف الطالبة بنجاح");
         }
         else {
-            return res.status(StatusCode.NotFound).send("stuedent not found");
+            return res.status(StatusCode.NotFound).send("الطالبة غير موجودة");
         }
     }
     catch (e) {
-        res.status(StatusCode.ServerError).send("Server busy try again later");
+        res.status(StatusCode.ServerError).send("السيرفر مشغول حاول مرة اخرى");
     }
 
 }
@@ -94,6 +103,7 @@ export const UpdateStudent = async(req,res)=>{
         }
     }
     catch (e) {
-        return res.status(StatusCode.ServerError).send("System error Updating", e);
+        return res.status(StatusCode.ServerError).send("خطأ في تحديث البيانات حاول مرة اخرى");
     }
 }
+
