@@ -1,74 +1,79 @@
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-  }
+
   
-  html {
-      position: relative;
-      min-height: 100%;
-  }
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    direction: rtl; /* Ensures RTL layout */
+    text-align: right;
+}
+
+
+.cont{ 
+    border: 1px solid red;
+    display: grid;
+    grid-template-rows: 100vh 100vh;
+    grid-template-columns: 20%  80%;
+    grid-template-areas: 
+    "sd main main main";
+}
+
+.side-bar{
+    grid-area: sd;    
+}
+ul{
+    border-radius: 24px;
+}
+
+.content{
+    grid-area: main;
+   border: 1px solid black;
+     display: flex;
+    justify-content: center;
+    overflow-y: auto
+
+}
   
-  body {
-    margin-bottom: 60px;
-    
-    
-  }
+.sub_content{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
   
+.sidebar {
+    width: 100%;
+    height: 100%;
+    background: #3B3E7C; /* Sidebar background color */
+    display: flex;
+    flex-direction: column;
+    padding: 0; /* Remove internal padding */
+    margin: 0; /* Remove any default margin */
+}
   
-  #wrapper {
-      display: flex;
-      flex-direction: row;
-    gap:20%;
+.sidebar > li {
+    padding: 5px;
+}
   
-  }
+
+.sidebar .nav-link {
+    color: #ffffff;
+    text-align: right;
+}
   
-  
-  .sidebar {
-      min-width: 250px;
-      background: #2e59d9; /* Sidebar background color */
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      position: fixed;
-  }
-  
-      .sidebar > li {
-          padding: 5px;
-      }
-  
-  .content-wrapper {
-      padding: 20px;
-      flex-grow: 1;
-  }
-  
-  .sidebar .nav-link {
-      color: #ffffff;
-  }
-  
-      .sidebar .nav-link:hover {
-          background: #1e3d73;
-      }
+.sidebar .nav-link:hover {
+    background: #1e3d73;
+}
   
   
   
   
   
-  .submenu {
-      padding-left: 20px; /* Indent submenu items */
-  }
+
   
-      .submenu .nav-link {
-          color: #ffffff;
-      }
-  
-          .submenu .nav-link:hover {
-              background-color: #1e3d73;
-          }
-  
-  .d-none {
-      display: none !important;
-  }
-  
-  .sidebar .nav-item.mt-auto {
-      margin-top: auto; /* Push to the bottom */
-  }
+
+
   

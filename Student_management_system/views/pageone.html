@@ -1,12 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>First App</title>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students List</title>
+    <style>
+        body {
+            font-family:Arial, sans-serif;
+            direction: rtl; /* Right to left for Arabic */
+            text-align: right;
+            background-color: #ECE6F0;
+        }
+        table {
+            background-color: white;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color:#3B3E7C;
+            color: white;
+        }
+    </style>
+</head>
+<body>
 
-       
-    </head>
+    <h1>قائمة الطلاب</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>إسم الطالبة</th>
+                <th>الصف</th>
+                <th>الشعبة</th>
+                <th>رقم الأب</th>
+                <th>رقم الأم</th>
+            </tr>
+        </thead>
+        <tbody id="students-table">
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
 
-    <body>
-       <h1>page-one</h1>
-    </body>
+    <script>
+        async function fetchStudents() {
+            try {
+                const response = await fetch('http://localhost:3000/student/get?classs=السادس الأساسي&section=2');
+                console.log("response..................",response); 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const students = await response.json();
+                const tableBody = document.getElementById('students-table');
+
+                tableBody.innerHTML = ''; 
+
+                if (students.length > 0) {
+                    students.forEach(student => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${student.name}</td>
+                            <td>${student.class}</td>
+                            <td>${student.section}</td>
+                            <td>${student.fatherPhone || 'N/A'}</td>
+                            <td>${student.motherPhone || 'N/A'}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="5">لا يوجد طلاب</td></tr>';
+                }
+            } catch (error) {
+                document.getElementById('students-table').innerHTML = `<tr><td colspan="5" style="color: red;">خطأ: ${error.message}</td></tr>`;
+            }
+        }
+
+      
+        console.log("Fetching students...");
+        fetchStudents();
+   
+    </script>
+
+</body>
 </html>
