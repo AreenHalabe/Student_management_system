@@ -3,6 +3,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { StudentRoute } from "./routes/studentRoute.js";
+import { AbsenceRoute } from "./routes/absenceRoute.js";
 
 const app = express();
 const port  = 3000;
@@ -16,6 +17,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(StudentRoute);
+app.use(AbsenceRoute);
 
 
 
