@@ -21,9 +21,7 @@ body {
 .side-bar{
     grid-area: sd;    
 }
-ul{
-    border-radius: 24px;
-}
+
 
 .content{
     grid-area: main;
@@ -50,10 +48,13 @@ ul{
     background: #3B3E7C; /* Sidebar background color */
     display: flex;
     flex-direction: column;
-    padding: 0; /* Remove internal padding */
     margin: 0; /* Remove any default margin */
 }
-  
+ul{
+    border-radius: 24px;
+    padding: 20px;
+
+}
 .sidebar > li {
     padding: 5px;
 }
@@ -65,14 +66,22 @@ ul{
 }
   
 .sidebar .nav-link:hover {
-    background: #1e3d73;
+    background: white;
+    color: #3B3E7C;
+    cursor: pointer;
 }
   
   
+a{
+    border-radius: 20px;
+}
   
   
-  
+.sidebar a.active {
+    background-color: #ECE6F0;
+    color: #3B3E7C;
 
+}
   
 
 
