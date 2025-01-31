@@ -25,27 +25,53 @@
         th {
             background-color:#3B3E7C;
             color: white;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .btn-custom {
+            background-color: #BFB1C1;
+            color: #454883;
+            border-radius: 20px;
+        }
+        .btn-custom:hover {
+            background: white;
         }
     </style>
 </head>
 <body>
 
-    <h1>قائمة الطلاب</h1>
+
+    <div class="container d-flex flex-column mt-3" style="padding-top: 18px; gap: 30px;">
+         <div>
+            <span class="mb-3" style="font-size: 2rem;"> الصف السادس الأساسي </span>
+            <hr>
+        </div>
+        <div class="d-flex justify-content-start gap-2 flex-wrap">
+            <button class="btn btn-custom px-4">الشعبة 1</button>
+            <button class="btn btn-custom px-4">الشعبة 2</button>
+            <button class="btn btn-custom px-4">الشعبة 3</button>
+        </div>
+    </div>
+    <div class="d-flex mt-2" style="overflow-y: auto; width: 100%;">
+
     
-    <table>
-        <thead>
-            <tr>
-                <th>إسم الطالبة</th>
-                <th>الصف</th>
-                <th>الشعبة</th>
-                <th>رقم الأب</th>
-                <th>رقم الأم</th>
-            </tr>
-        </thead>
-        <tbody id="students-table">
-            <!-- Data will be inserted here -->
-        </tbody>
-    </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>إسم الطالبة</th>
+                    <th>الصف</th>
+                    <th>الشعبة</th>
+                    <th>رقم الأب</th>
+                    <th>رقم الأم</th>
+                </tr>
+            </thead>
+            <tbody id="students-table">
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
 
     <script>
         async function fetchStudents() {

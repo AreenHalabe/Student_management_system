@@ -28,7 +28,8 @@ body {
    border: 1px solid black;
      display: flex;
     justify-content: center;
-    overflow-y: auto
+
+    /* overflow-y: auto; */
 
 }
   
@@ -53,11 +54,9 @@ body {
 ul{
     border-radius: 24px;
     padding: 20px;
+    width: 100%;
+}
 
-}
-.sidebar > li {
-    padding: 5px;
-}
   
 
 .sidebar .nav-link {
