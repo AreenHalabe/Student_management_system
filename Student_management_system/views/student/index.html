@@ -46,7 +46,7 @@
         }
         .active-link{
             background-color: #454883;
-            color: #BFB1C1;
+            color: white;
         }
     </style>
 </head>
@@ -72,6 +72,8 @@
                     <th>الشعبة</th>
                     <th>رقم الأب</th>
                     <th>رقم الأم</th>
+                    <th> غياب  </th>
+                    <th> تعديل / حذف </th>
                 </tr>
             </thead>
             <tbody id="students-table">
@@ -133,6 +135,11 @@
                             <td>${student.section}</td>
                             <td>${student.fatherPhone || 'N/A'}</td>
                             <td>${student.motherPhone || 'N/A'}</td>
+                            <td><input type="checkbox" /></td>
+                            <td>
+                                <a href="#"><i class="far fa-edit"></i></a>
+                                <a href="#"><i class="fas fa-trash-alt"></i></a>
+                            </td>
                         `;
                         tableBody.appendChild(row);
                     });
