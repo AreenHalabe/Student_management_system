@@ -35,7 +35,8 @@
             border-radius: 20px;
         }
         .btn-custom:hover {
-            background: white;
+            background: #454883;
+            color: #BFB1C1;
         }
         .table-container {
             max-height: 450px; /* Set a max height for the table container */
@@ -43,18 +44,22 @@
             margin-top: 20px; /* Add some margin for spacing */
             width: 100%;
         }
+        .active-link{
+            background-color: #454883;
+            color: #BFB1C1;
+        }
     </style>
 </head>
 <body>
     <div class="container d-flex flex-column mt-3" style="padding-top: 18px; gap: 30px;">
         <div>
-            <span class="mb-3" style="font-size: 2rem;"> الصف السادس الأساسي </span>
+            <span class="mb-3" id="name-of-class" style="font-size: 2rem;">   </span>
             <hr>
         </div>
         <div class="d-flex justify-content-start gap-2 flex-wrap">
-            <button class="btn btn-custom px-4">الشعبة 1</button>
-            <button class="btn btn-custom px-4">الشعبة 2</button>
-            <button class="btn btn-custom px-4">الشعبة 3</button>
+            <button class=" n-link btn btn-custom px-4" onclick="ChangeSection(this , 1)">الشعبة 1</button>
+            <button class=" n-link btn btn-custom px-4" onclick="ChangeSection(this , 2)">الشعبة 2</button>
+            <button class=" n-link btn btn-custom px-4" onclick="ChangeSection(this , 3)">الشعبة 3</button>
         </div>
     </div>
     
@@ -76,10 +81,41 @@
     </div>
 
     <script>
-        async function fetchStudents() {
+
+
+
+         function ChangeSection(element , Editesection){
+            let navlist= document.querySelectorAll('.n-link');
+
+             navlist.forEach(link => {
+                 link.classList.remove('active-link');
+            });
+
+            element.classList.add('active-link');
+            getQueryParams(Editesection);
+         }
+
+
+
+
+        function getQueryParams(section) {
+            let navlist= document.querySelectorAll('.n-link');
+            const classs = sessionStorage.getItem('classs');
+            console.log(section);
+            if(section === '1'){
+             navlist[0].classList.add('active-link');
+            }
+            fetchStudents(classs,section);
+        }
+
+        async function fetchStudents(classs , section) {
+            let ClassName=document.getElementById('name-of-class');
+            ClassName.innerHTML='الصف '+classs;
+
             try {
-                const response = await fetch('http://localhost:3000/student/get?classs=السادس الأساسي&section=2');
-                //console.log("response..................", response); 
+                const url=`http://localhost:3000/student/get?classs=${classs}&section=${section}`;
+                console.log('Api_URL is : ' , url);                
+                    const response = await fetch(url);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
@@ -108,8 +144,7 @@
             }
         }
 
-        //console.log("Fetching students...");
-        fetchStudents();
+        getQueryParams(sessionStorage.getItem('section'));
     </script>
 </body>
 </html>
