@@ -138,7 +138,7 @@
                             <td><input type="checkbox" /></td>
                             <td>
                                 <a href="#"><i class="far fa-edit"></i></a>
-                                <a href="#"><i class="fas fa-trash-alt"></i></a>
+                                <a href="#" onclick="deleteStudent('${student._id}' , '${student.name}' , '${student.section}')" ><i class="fas fa-trash-alt"></i></a>
                             </td>
                         `;
                         tableBody.appendChild(row);
@@ -148,6 +148,23 @@
                 }
             } catch (error) {
                 document.getElementById('students-table').innerHTML = `<tr><td colspan="5" style="color: red;">خطأ: ${error.message}</td></tr>`;
+            }
+        }
+
+        async function deleteStudent(studentId , name , section){
+            const confirmation = confirm(`هل أنت متأكد من حذف هذه الطالبة_____( ${name} ) ؟`);
+            if (!confirmation) return;
+            try{
+                const url = `http://localhost:3000/student/delete?id=${studentId}`;
+                const response = await fetch(url,{method : 'DELETE'})
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const classs = sessionStorage.getItem('classs');
+                fetchStudents(classs, section);
+            }
+            catch(error){
+                alert('error : ' , error.message);
             }
         }
 

@@ -17,7 +17,7 @@ export const AllStudentsByClassAndSection = async(req , res)=>{
             res.status(StatusCode.Ok).send(students);
         }
         else{
-            res.status(StatusCode.BadRequst).send(`لا يوجد صف (${classs}) مع شعبه (${section})`);
+            res.status(StatusCode.BadRequst).send({message:`لا يوجد صف (${classs}) مع شعبه (${section})`});
         }
 
         
@@ -32,12 +32,8 @@ export const AllStudentsByClassAndSection = async(req , res)=>{
 
 export const AddStudent = async(req , res) =>{
     const {name , classs , section , fatherPhone , motherPhone} = req.body;
-
+   
     try{
-        const existingStudent = await Student.findOne({ name });
-        if (existingStudent) {
-            return res.status(StatusCode.BadRequest).send("اسم الطالبة موجود بالفعل");
-        }
         const NewStudent = new Student({
             name : name,
             class : classs,
@@ -48,10 +44,10 @@ export const AddStudent = async(req , res) =>{
 
         await NewStudent.save();
         
-        res.status(StatusCode.Ok).send("تم اضافه طالبه جديدة بنجاح");
+        res.status(StatusCode.Ok).send({message:"تم اضافه طالبه جديدة بنجاح"});
     }
     catch (e) {
-        res.status(StatusCode.ServerError).send("الخادم مشغول حاول مرة اخرى");
+         res.status(StatusCode.BadRequst).send({message:"اسم الطالبة موجود بالفعل"});
     }
 }
 
@@ -61,14 +57,14 @@ export const DeleteStudent = async(req , res)=>{
     try{
         const DeleteStudent = await Student.deleteOne({_id : id});
         if (DeleteStudent.deletedCount != 0) {
-            return res.status(StatusCode.Ok).send("تم حذف الطالبة بنجاح");
+            return res.status(StatusCode.Ok).send({message:"تم حذف الطالبة بنجاح"});
         }
         else {
-            return res.status(StatusCode.NotFound).send("الطالبة غير موجودة");
+            return res.status(StatusCode.NotFound).send({message:"الطالبة غير موجودة"});
         }
     }
     catch (e) {
-        res.status(StatusCode.ServerError).send("السيرفر مشغول حاول مرة اخرى");
+        res.status(StatusCode.ServerError).send({message:"السيرفر مشغول حاول مرة اخرى"});
     }
 
 }
@@ -92,18 +88,18 @@ export const UpdateStudent = async(req,res)=>{
                 }
             );
             if (UpdateStudent.modifiedCount != 0) {
-                res.status(StatusCode.Ok).send("تم التحديث بنجاح");
+                res.status(StatusCode.Ok).send({message:"تم التحديث بنجاح"});
             }
             else {
-                res.status(StatusCode.ServerError).send("خطأ في التحديث حاول مرة اخرى");
+                res.status(StatusCode.ServerError).send({message:"خطأ في التحديث حاول مرة اخرى"});
             }
         }
         else{
-            res.status(StatusCode.BadRequst).send("خطأ اثناء التحديث. الاسم المدخل خاص بطالبة اخرى ")
+            res.status(StatusCode.BadRequst).send({message:"خطأ اثناء التحديث. الاسم المدخل خاص بطالبة اخرى "});
         }
     }
     catch (e) {
-        return res.status(StatusCode.ServerError).send("خطأ في تحديث البيانات حاول مرة اخرى");
+        return res.status(StatusCode.ServerError).send({message:"خطأ في تحديث البيانات حاول مرة اخرى"});
     }
 }
 
