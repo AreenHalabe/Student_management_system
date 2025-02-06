@@ -29,10 +29,10 @@
                     <br>
                     <br>
 
-                    <a class="nav-link d-flex justify-content-center align-items-center" onclick="navigateTo('./classes/home.html', this)">
+                    <a class="nav-link d-flex justify-content-center align-items-center" data-page="./classes/home.html">
                         <span>الحضور و الغياب</span>
                     </a>
-                    <a class="nav-link d-flex justify-content-center align-items-center" onclick="navigateTo('./student/add.html', this)">
+                    <a class="nav-link d-flex justify-content-center align-items-center" data-page="./student/add.html">
                         <span>اضافه طلاب</span>
                     </a>
                 </ul>
@@ -48,7 +48,7 @@
     </div>
 
     
-    <script src="../wroot/js/mainWindow.js" asp-append-version="true"></script>
-    
+    <script type="module" src="../wroot/js/mainWindow.js" defer></script>
+
 </body>
 </html>
