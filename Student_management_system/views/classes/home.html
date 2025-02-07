@@ -64,16 +64,8 @@
     
     function navigate(page , classs , section) {
         const content = document.getElementById('sub_content');
-
         sessionStorage.setItem('classs', classs);
         sessionStorage.setItem('section', section);
-
-        const url = `${page}?classs=${classs}&section=${section}`;
-        console.log('class : ' , classs , '-------' ,'sec : ' , section);
-        console.log("Navigating to:", url);
-
-
-
         fetch(page)
             .then(response => {
                 if (!response.ok) {
@@ -90,7 +82,6 @@
             });
     }
 
-    // Function to manually execute scripts after loading new content
     function executeScripts(element) {
         const scripts = element.getElementsByTagName('script');
         for (let i = 0; i < scripts.length; i++) {
@@ -102,13 +93,7 @@
 
 
    
-    // const cards = document.querySelectorAll('.card-bodyyy');
-    // cards.forEach(card => {
-    //     card.addEventListener('click', function() {
-    //         console.log("Card clicked!");
-    //     });
-    // });
-   
+ 
 
 
 

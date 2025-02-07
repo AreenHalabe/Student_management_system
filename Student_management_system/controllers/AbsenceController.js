@@ -44,17 +44,32 @@ export const CreateStudentAbsence = async (req, res) => {
     }
 
     try {
-        const absences = studentIds.map((studentId) => ({
-            studentId: studentId, 
-            date: Date.now(), 
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // set to start of the day (ignor the houre , miniute and second)
+
+        // Check for existing absences
+        const existingAbsences = await Absence.find({
+            studentId: { $in: studentIds },
+            date: { 
+                $gte: today, 
+                $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) // end of the day
+            }
+        });
+
+        // Filter out IDs that already have an absence today
+        const existingIds = existingAbsences.map(a => a.studentId.toString());
+        const newAbsences = studentIds.filter(id => !existingIds.includes(id)).map(studentId => ({
+            studentId: studentId,
+            date: Date.now(),
         }));
 
-        await Absence.insertMany(absences);
-
-        res.status(StatusCode.Ok).send(`تم اضافه الغياب ل (${absences.length}) طالبة نجاح`);
+        if (newAbsences.length > 0) {
+            await Absence.insertMany(newAbsences);
+            res.status(200).send({message: 'تم إضافة الغياب للطالبات'});
+        } else {
+            res.status(200).send({message: 'كل الطالبات المحددات موجودة بالفعل في قائمة الغياب لهذا اليوم.'});
+        }
     } catch (e) {
-        //console.error(e);
-       // res.status(500).json({ error: "Failed to create absences", details: e.message }); // Send a safe error message
         res.status(500).send("خطأ في اضافة الغيابات !!!!!");
     }
 };
