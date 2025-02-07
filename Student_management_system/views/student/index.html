@@ -1,56 +1,44 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Students List</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            direction: rtl; /* Right to left for Arabic */
-            text-align: right;
-            background-color: #ECE6F0; 
-        }
-        table {
-            background-color: white;
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
-        th {
-            background-color: #3B3E7C;
-            color: white;
-            position: sticky;
-            top: 0;
-            z-index: 2;
-        }
-        .btn-custom {
-            background-color: #BFB1C1;
-            color: #454883;
-            border-radius: 20px;
-        }
-        .btn-custom:hover {
-            background: #454883;
-            color: #BFB1C1;
-        }
-        .table-container {
-            max-height: 450px; /* Set a max height for the table container */
-            overflow-y: auto; /* Enable vertical scrolling */
-            margin-top: 20px; /* Add some margin for spacing */
-            width: 100%;
-        }
-        .active-link{
-            background-color: #454883;
-            color: white;
-        }
-    </style>
-</head>
-<body>
+
+<style>
+    
+    table {
+        background-color: white;
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+    th {
+        background-color: #3B3E7C;
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+    .btn-custom {
+        background-color: #BFB1C1;
+        color: #454883;
+        border-radius: 20px;
+    }
+    .btn-custom:hover {
+        background: #454883;
+        color: #BFB1C1;
+    }
+    .table-container {
+        max-height: 450px; /* Set a max height for the table container */
+        overflow-y: auto; /* Enable vertical scrolling */
+        margin-top: 20px; /* Add some margin for spacing */
+        width: 100%;
+    }
+    .active-link{
+        background-color: #454883;
+        color: white;
+    }
+</style>
     <div class="container d-flex flex-column mt-3" style="padding-top: 18px; gap: 30px;">
         <div>
             <span class="mb-3" id="name-of-class" style="font-size: 2rem;">   </span>
@@ -82,93 +70,91 @@
         </table>
     </div>
 
-    <script>
+<script>
 
 
 
-         function ChangeSection(element , Editesection){
-            let navlist= document.querySelectorAll('.n-link');
+        function ChangeSection(element , Editesection){
+        let navlist= document.querySelectorAll('.n-link');
 
-             navlist.forEach(link => {
-                 link.classList.remove('active-link');
-            });
+            navlist.forEach(link => {
+                link.classList.remove('active-link');
+        });
 
-            element.classList.add('active-link');
-            getQueryParams(Editesection);
-         }
-
-
+        element.classList.add('active-link');
+        getQueryParams(Editesection);
+        }
 
 
-        function getQueryParams(section) {
-            let navlist= document.querySelectorAll('.n-link');
+
+
+    function getQueryParams(section) {
+        let navlist= document.querySelectorAll('.n-link');
+        const classs = sessionStorage.getItem('classs');
+        console.log(section);
+        if(section === '1'){
+            navlist[0].classList.add('active-link');
+        }
+        fetchStudents(classs,section);
+    }
+
+    async function fetchStudents(classs , section) {
+        let ClassName=document.getElementById('name-of-class');
+        ClassName.innerHTML='الصف '+classs;
+
+        try {
+            const url=`http://localhost:3000/student/get?classs=${classs}&section=${section}`;
+            console.log('Api_URL is : ' , url);                
+                const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const students = await response.json();
+            const tableBody = document.getElementById('students-table');
+
+            tableBody.innerHTML = ''; 
+
+            if (students.length > 0) {
+                students.forEach(student => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student.name}</td>
+                        <td>${student.class}</td>
+                        <td>${student.section}</td>
+                        <td>${student.fatherPhone || 'N/A'}</td>
+                        <td>${student.motherPhone || 'N/A'}</td>
+                        <td><input type="checkbox" /></td>
+                        <td>
+                            <a href="#"><i class="far fa-edit"></i></a>
+                            <a href="#" onclick="deleteStudent('${student._id}' , '${student.name}' , '${student.section}')" ><i class="fas fa-trash-alt"></i></a>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                tableBody.innerHTML = '<tr><td colspan="5">لا يوجد طلاب</td></tr>';
+            }
+        } catch (error) {
+            document.getElementById('students-table').innerHTML = `<tr><td colspan="5" style="color: red;">خطأ: ${error.message}</td></tr>`;
+        }
+    }
+
+    async function deleteStudent(studentId , name , section){
+        const confirmation = confirm(`هل أنت متأكد من حذف هذه الطالبة_____( ${name} ) ؟`);
+        if (!confirmation) return;
+        try{
+            const url = `http://localhost:3000/student/delete?id=${studentId}`;
+            const response = await fetch(url,{method : 'DELETE'})
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
             const classs = sessionStorage.getItem('classs');
-            console.log(section);
-            if(section === '1'){
-             navlist[0].classList.add('active-link');
-            }
-            fetchStudents(classs,section);
+            fetchStudents(classs, section);
         }
-
-        async function fetchStudents(classs , section) {
-            let ClassName=document.getElementById('name-of-class');
-            ClassName.innerHTML='الصف '+classs;
-
-            try {
-                const url=`http://localhost:3000/student/get?classs=${classs}&section=${section}`;
-                console.log('Api_URL is : ' , url);                
-                    const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const students = await response.json();
-                const tableBody = document.getElementById('students-table');
-
-                tableBody.innerHTML = ''; 
-
-                if (students.length > 0) {
-                    students.forEach(student => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${student.name}</td>
-                            <td>${student.class}</td>
-                            <td>${student.section}</td>
-                            <td>${student.fatherPhone || 'N/A'}</td>
-                            <td>${student.motherPhone || 'N/A'}</td>
-                            <td><input type="checkbox" /></td>
-                            <td>
-                                <a href="#"><i class="far fa-edit"></i></a>
-                                <a href="#" onclick="deleteStudent('${student._id}' , '${student.name}' , '${student.section}')" ><i class="fas fa-trash-alt"></i></a>
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                } else {
-                    tableBody.innerHTML = '<tr><td colspan="5">لا يوجد طلاب</td></tr>';
-                }
-            } catch (error) {
-                document.getElementById('students-table').innerHTML = `<tr><td colspan="5" style="color: red;">خطأ: ${error.message}</td></tr>`;
-            }
+        catch(error){
+            alert('error : ' , error.message);
         }
+    }
 
-        async function deleteStudent(studentId , name , section){
-            const confirmation = confirm(`هل أنت متأكد من حذف هذه الطالبة_____( ${name} ) ؟`);
-            if (!confirmation) return;
-            try{
-                const url = `http://localhost:3000/student/delete?id=${studentId}`;
-                const response = await fetch(url,{method : 'DELETE'})
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const classs = sessionStorage.getItem('classs');
-                fetchStudents(classs, section);
-            }
-            catch(error){
-                alert('error : ' , error.message);
-            }
-        }
-
-        getQueryParams(sessionStorage.getItem('section'));
-    </script>
-</body>
-</html>
+    getQueryParams(sessionStorage.getItem('section'));
+</script>

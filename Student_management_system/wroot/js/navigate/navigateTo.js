@@ -16,6 +16,9 @@ export function navigateTo(page , content){
         });
 }
 
+export function pp(){
+    console.log("ppppp");
+}
 // Function to manually execute scripts after loading new content
 export function executeScripts(element) {
     const scripts = element.getElementsByTagName('script');
