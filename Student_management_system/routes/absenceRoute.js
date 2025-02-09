@@ -1,5 +1,5 @@
 import  express  from "express";
-import { CreateStudentAbsence, GetStudnetAbsence , DeleteAbsence } from "../controllers/AbsenceController.js";
+import { CreateStudentAbsence, GetStudnetAbsence , DeleteAbsence ,GetAbsence ,GetAbsenceDate } from "../controllers/AbsenceController.js";
 
 export const AbsenceRoute = express.Router();
 
@@ -16,3 +16,11 @@ AbsenceRoute.post('/student/create/absence' , async(req,res)=>{
 AbsenceRoute.delete('/student/absence/delete' , async(req,res)=>{
     DeleteAbsence(req,res);
 });
+
+AbsenceRoute.get('/student/absences' , async(req,res)=>{
+    GetAbsence(req,res);
+})
+
+AbsenceRoute.get('/student/absencebydate' , async(req,res)=>{
+    GetAbsenceDate(req,res);
+})

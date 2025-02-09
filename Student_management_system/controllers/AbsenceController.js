@@ -1,14 +1,16 @@
 import { body, query } from "express-validator";
 import { StatusCode } from "../HTTPSStatusCode/StatusCode.js";
 import { Absence } from "../models/Absence.js";
+import {format} from'date-fns';
 
-
-
+const formatDate = (date) => {
+    return format(date, 'yyyy-MM-dd');
+};
 
 export const GetStudnetAbsence  = async(req,res)=>{
 
     try{
-        const absences= await Absence.find({}).populate("studentId");
+        const absences= await Absence.find({}).populate("student");
         res.status(StatusCode.Ok).send(absences);
     }
     catch(e){
@@ -45,23 +47,27 @@ export const CreateStudentAbsence = async (req, res) => {
 
     try {
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // set to start of the day (ignor the houre , miniute and second)
+        today.setUTCHours(0, 0, 0, 0); // Use UTC instead of local time
+
+        const tomorrow = new Date(today);
+        tomorrow.setUTCDate(today.getUTCDate() + 1); // Move to the next day in UTC
 
         // Check for existing absences
         const existingAbsences = await Absence.find({
-            studentId: { $in: studentIds },
+            student: { $in: studentIds },
             date: { 
                 $gte: today, 
-                $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) // end of the day
+                $lt: tomorrow // Ensure correct day boundary in UTC
             }
         });
 
         // Filter out IDs that already have an absence today
-        const existingIds = existingAbsences.map(a => a.studentId.toString());
+        const existingIds = existingAbsences.map(a => a.student.toString());
         const newAbsences = studentIds.filter(id => !existingIds.includes(id)).map(studentId => ({
-            studentId: studentId,
-            date: Date.now(),
+            student: studentId,
+            date: today, // This is now in UTC
         }));
+
 
         if (newAbsences.length > 0) {
             await Absence.insertMany(newAbsences);
@@ -73,3 +79,122 @@ export const CreateStudentAbsence = async (req, res) => {
         res.status(500).send("خطأ في اضافة الغيابات !!!!!");
     }
 };
+
+
+// export const GetAbsence = async(req , res)=>{
+//     const {classs} = req.query;
+
+//     const student =await Absence.aggregate([
+//         {
+//             $lookup: {
+//                 from: "students",
+//                 localField: "student",
+//                 foreignField: "_id",
+//                 as: "student",
+//             },
+//         },
+//         { $unwind: "$student" },
+//         { $match: 
+//             {
+//                 "student.class": `${classs}`
+//             } 
+//         },
+//         {
+//             $project: {
+//                 _id: 1, // Keep the absence ID if needed
+//                 date: 1, // Keep the date field
+//                 "student.name": 1, // Only include the name from the student
+//                 "student._id":1
+//             },
+//         },
+//     ]);
+//     res.status(StatusCode.Ok).send(student);
+// }
+
+
+
+export const GetAbsenceDate = async(req , res)=>{
+    const {dateString} = req.query;
+
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) {
+        return res.status(400).send({ message: "Invalid date format." });
+    }
+
+    date.setUTCHours(0, 0, 0, 0);
+    const nextDay = new Date(date);
+    nextDay.setUTCDate(date.getUTCDate() + 1);
+
+
+
+    const absences = await Absence.find({
+        date: {
+            $gte: date,
+            $lt: nextDay
+        }
+    }).populate("student");
+
+    const formattedAbsences = absences.map(absence => ({
+        _id: absence._id,
+        date: formatDate(absence.date), // Format the date here
+        student: absence.student // Include the populated student data
+    }));
+    res.send(formattedAbsences);
+}
+
+export const GetAbsence = async(req , res)=>{
+        const {dateString,classs} = req.query;
+
+        const date = new Date(dateString);
+
+        if (isNaN(date.getTime())) {
+            return res.status(400).send({ message: "Invalid date format." });
+        }
+
+        date.setUTCHours(0, 0, 0, 0);
+        const nextDay = new Date(date);
+        nextDay.setUTCDate(date.getUTCDate() + 1);
+    
+
+
+        const absences =await Absence.aggregate([
+            {
+                $lookup: {
+                    from: "students",
+                    localField: "student",
+                    foreignField: "_id",
+                    as: "student",
+                },
+            },
+            { $unwind: "$student" },
+            { $match: 
+                {
+                    "student.class": `${classs}`,
+                    "date":{
+                        $gte: date,
+                        $lt: nextDay
+                    }
+                } 
+            },
+            {
+                $project: {
+                    _id: 1, // Keep the absence ID if needed
+                    date: 1, // Keep the date field
+                    "student.name": 1, // Only include the name from the student
+                    "student._id":1,
+                    "student.class":1,
+                    "student.section":1
+                },
+            },
+        ]);
+        
+        const formattedAbsences = absences.map(absence => ({
+            _id:absence._id,
+            date: formatDate(absence.date), // Format the date here
+            student: absence.student // Include the populated student data
+        }));
+
+        res.send(formattedAbsences);
+}
+    
