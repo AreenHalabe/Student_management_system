@@ -2,6 +2,22 @@ import { body, query } from "express-validator";
 import { Student } from "../models/student.js";
 import { StatusCode } from "../HTTPSStatusCode/StatusCode.js";
 
+export const GetStudent = async(req,res)=>{
+    const{id} = req.query;
+    try{
+        const student = await Student.findById({_id:id});
+        if(student != null){
+            res.status(StatusCode.Ok).send(student);
+        }
+        else{
+            res.status(StatusCode.NotFound).send({message:'الطالبة غير موجودة'});
+        }
+    }
+    catch(e){
+        res.status(StatusCode.NotFound).send({message:'خطأ في السيرفر حاول مرة اخرى'});
+    }
+}
+
 export const AllStudentsByClassAndSection = async(req , res)=>{
     const {classs , section} = req.query;
     try{

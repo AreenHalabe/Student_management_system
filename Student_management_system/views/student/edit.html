@@ -112,18 +112,26 @@
 
 
 
-    function loadStudentData() {
-        const studentData = JSON.parse(sessionStorage.getItem('editStudentData'));
-        console.log(studentData);
-        if (studentData) {
-            document.getElementById('student-name').value = studentData.name;
-            document.getElementById('student-class').value = studentData.class;
-            document.getElementById('student-section').value = studentData.section;
-            document.getElementById('father-phone').value = studentData.fatherPhone || '';
-            document.getElementById('mother-phone').value = studentData.motherPhone || '';
-            document.getElementById('student-id').value = studentData._id;
-        } else {
-            alert('No student data found!');
+   async function loadStudentData() {
+        const studentId = JSON.parse(sessionStorage.getItem('studentId')).trim();
+        try{
+            const url=`http://localhost:3000/student?id=${studentId}`;
+            const response = await fetch(url,{method:'GET'});
+            if(! response.ok){
+                throw new Error('HTTP error: ' + response.status);
+            }
+            const data = await response.json(); // Parse the JSON response
+
+            document.getElementById('student-name').value=data.name
+            document.getElementById('student-class').value = data.class;
+            document.getElementById('student-section').value = data.section;
+            document.getElementById('fatherPhone').value = data.fatherPhone || '';
+            document.getElementById('motherPhone').value = data.motherPhone || '';
+            document.getElementById('student-id').value = data._id;
+
+        }
+        catch(e){
+            alert('خطأ في الأتصال بالخادم' + e.message);
         }
     }
 

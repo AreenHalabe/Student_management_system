@@ -1,9 +1,20 @@
 import  express  from "express";
 import { body,query} from "express-validator";
 import{validate} from"../Utils/validator.js";
-import { AllStudentsByClassAndSection, DeleteStudent ,AddStudent ,UpdateStudent } from "../controllers/StudentController.js";
+import { AllStudentsByClassAndSection, DeleteStudent ,AddStudent ,UpdateStudent ,GetStudent } from "../controllers/StudentController.js";
 import { StatusCode } from "../HTTPSStatusCode/StatusCode.js";
 export const StudentRoute = express.Router();
+
+StudentRoute.get('/student' ,
+    query('id').notEmpty().withMessage('id must be not empty')
+        .bail()
+        .isMongoId().withMessage('invalid sentence id'),
+    (req, res, next) => validate(req, res, next, StatusCode.BadRequst),
+    
+    async(req,res)=>{
+        GetStudent(req,res);
+    }
+);
 
 StudentRoute.get('/student/get' , async(req ,res)=>{
         AllStudentsByClassAndSection(req , res);

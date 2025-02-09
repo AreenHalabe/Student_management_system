@@ -14,7 +14,7 @@ export const GetStudnetAbsence  = async(req,res)=>{
         res.status(StatusCode.Ok).send(absences);
     }
     catch(e){
-        res.status(500).send("خطأ في السيرفر حاول مرة اخرى");
+        res.status(StatusCode.ServerError).send("خطأ في السيرفر حاول مرة اخرى");
     }
 };
 
@@ -24,14 +24,14 @@ export const DeleteAbsence = async(req,res)=>{
     try{
         const DeleteAbsence = await Absence.deleteOne({_id:id});
         if (DeleteAbsence.deletedCount != 0) {
-            return res.status(StatusCode.Ok).send("تم حذف الغياب بنجاح");
+            return res.status(StatusCode.Ok).send({message:"تم حذف الغياب بنجاح"});
         }
         else {
-            return res.status(StatusCode.NotFound).send("لا يوجد غياب");
+            return res.status(StatusCode.NotFound).send({message:"لا يوجد غياب"});
         }
     }
     catch(e){
-        res.status(StatusCode.BadRequst).send('خطأ في السيرفر حاول مرة اخرى')
+        res.status(StatusCode.ServerError).send('خطأ في السيرفر حاول مرة اخرى')
     }
 }
 
@@ -42,7 +42,7 @@ export const CreateStudentAbsence = async (req, res) => {
     const { studentIds } = req.body; 
 
     if (!Array.isArray(studentIds) || studentIds.length === 0) {
-        return res.status(400).send("Invalid input: studentIds must be a non-empty array.");
+        return res.status(400).send({message:"Invalid input: studentIds must be a non-empty array."});
     }
 
     try {
@@ -71,80 +71,19 @@ export const CreateStudentAbsence = async (req, res) => {
 
         if (newAbsences.length > 0) {
             await Absence.insertMany(newAbsences);
-            res.status(200).send({message: 'تم إضافة الغياب للطالبات'});
+            res.status(StatusCode.Ok).send({message: 'تم إضافة الغياب للطالبات'});
         } else {
-            res.status(200).send({message: 'كل الطالبات المحددات موجودة بالفعل في قائمة الغياب لهذا اليوم.'});
+            res.status(StatusCode.Ok).send({message: 'كل الطالبات المحددات موجودة بالفعل في قائمة الغياب لهذا اليوم.'});
         }
     } catch (e) {
-        res.status(500).send("خطأ في اضافة الغيابات !!!!!");
+        res.status(StatusCode.ServerError).send({message:"wrong sentence in the id"});
     }
 };
 
 
-// export const GetAbsence = async(req , res)=>{
-//     const {classs} = req.query;
 
-//     const student =await Absence.aggregate([
-//         {
-//             $lookup: {
-//                 from: "students",
-//                 localField: "student",
-//                 foreignField: "_id",
-//                 as: "student",
-//             },
-//         },
-//         { $unwind: "$student" },
-//         { $match: 
-//             {
-//                 "student.class": `${classs}`
-//             } 
-//         },
-//         {
-//             $project: {
-//                 _id: 1, // Keep the absence ID if needed
-//                 date: 1, // Keep the date field
-//                 "student.name": 1, // Only include the name from the student
-//                 "student._id":1
-//             },
-//         },
-//     ]);
-//     res.status(StatusCode.Ok).send(student);
-// }
-
-
-
-export const GetAbsenceDate = async(req , res)=>{
+export const GetAbsenceByDate = async(req , res)=>{
     const {dateString} = req.query;
-
-    const date = new Date(dateString);
-
-    if (isNaN(date.getTime())) {
-        return res.status(400).send({ message: "Invalid date format." });
-    }
-
-    date.setUTCHours(0, 0, 0, 0);
-    const nextDay = new Date(date);
-    nextDay.setUTCDate(date.getUTCDate() + 1);
-
-
-
-    const absences = await Absence.find({
-        date: {
-            $gte: date,
-            $lt: nextDay
-        }
-    }).populate("student");
-
-    const formattedAbsences = absences.map(absence => ({
-        _id: absence._id,
-        date: formatDate(absence.date), // Format the date here
-        student: absence.student // Include the populated student data
-    }));
-    res.send(formattedAbsences);
-}
-
-export const GetAbsence = async(req , res)=>{
-        const {dateString,classs} = req.query;
 
         const date = new Date(dateString);
 
@@ -155,46 +94,110 @@ export const GetAbsence = async(req , res)=>{
         date.setUTCHours(0, 0, 0, 0);
         const nextDay = new Date(date);
         nextDay.setUTCDate(date.getUTCDate() + 1);
-    
 
-
-        const absences =await Absence.aggregate([
-            {
-                $lookup: {
-                    from: "students",
-                    localField: "student",
-                    foreignField: "_id",
-                    as: "student",
-                },
-            },
-            { $unwind: "$student" },
-            { $match: 
+        try{
+            const absences =await Absence.aggregate([
                 {
-                    "student.class": `${classs}`,
-                    "date":{
-                        $gte: date,
-                        $lt: nextDay
-                    }
-                } 
-            },
-            {
-                $project: {
-                    _id: 1, // Keep the absence ID if needed
-                    date: 1, // Keep the date field
-                    "student.name": 1, // Only include the name from the student
-                    "student._id":1,
-                    "student.class":1,
-                    "student.section":1
+                    $lookup: {
+                        from: "students",
+                        localField: "student",
+                        foreignField: "_id",
+                        as: "student",
+                    },
                 },
-            },
-        ]);
-        
-        const formattedAbsences = absences.map(absence => ({
-            _id:absence._id,
-            date: formatDate(absence.date), // Format the date here
-            student: absence.student // Include the populated student data
-        }));
+                { $unwind: "$student" },
+                { $match: 
+                    {
+                        "date":{
+                            $gte: date,
+                            $lt: nextDay
+                        }
+                    } 
+                },
+                {
+                    $project: {
+                        _id: 1, // Keep the absence ID if needed
+                        date: 1, // Keep the date field
+                        "student.name": 1, // Only include the name from the student
+                        "student._id":1,
+                        "student.class":1,
+                        "student.section":1
+                    },
+                },
+            ]);
+            
+            const formattedAbsences = absences.map(absence => ({
+                _id:absence._id,
+                date: formatDate(absence.date), // Format the date here
+                student: absence.student // Include the populated student data
+            }));
+    
+            res.status(StatusCode.Ok).send(formattedAbsences);
+        }
+        catch(e){
+            res.status(StatusCode.ServerError).send("خطأ في السيرفر حاول مرة اخرى");
+        }
+}
 
-        res.send(formattedAbsences);
+export const GetAbsenceByClassAndSection = async(req , res)=>{
+        const { dateString, classs , section} = req.query;
+        
+        const date = new Date(dateString);
+
+        if (isNaN(date.getTime())) {
+            return res.status(400).send({ message: "Invalid date format." });
+        }
+
+        date.setUTCHours(0, 0, 0, 0);
+        const nextDay = new Date(date);
+        nextDay.setUTCDate(date.getUTCDate() + 1);
+    
+        const sectionInt = parseInt(section, 10);
+
+        try{
+            const absences =await Absence.aggregate([
+                {
+                    $lookup: {
+                        from: "students",
+                        localField: "student",
+                        foreignField: "_id",
+                        as: "student",
+                    },
+                },
+                { $unwind: "$student" },
+                { $match: 
+                    {
+                        "date":{
+                            $gte: date,
+                            $lt: nextDay
+                        },
+                        "student.class": `${classs}`,
+                        "student.section": sectionInt
+                        
+                    } 
+                },
+                {
+                    $project: {
+                        _id: 1, // Keep the absence ID if needed
+                        date: 1, // Keep the date field
+                        "student.name": 1, // Only include the name from the student
+                        "student._id":1,
+                        "student.class":1,
+                        "student.section":1
+                    },
+                },
+            ]);
+    
+            const formattedAbsences = absences.map(absence => ({
+                _id:absence._id,
+                date: formatDate(absence.date), // Format the date here
+                student: absence.student // Include the populated student data
+            }));
+    
+            res.status(StatusCode.Ok).send(formattedAbsences);
+        }
+        catch(e){
+            res.status(StatusCode.ServerError).send("خطأ في السيرفر حاول مرة اخرى");
+        }
 }
     
