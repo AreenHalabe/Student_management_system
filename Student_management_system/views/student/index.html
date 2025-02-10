@@ -108,6 +108,20 @@
         fetchStudents(classs,section);
     }
 
+    
+
+    function AddLink(){
+        const editLink = document.querySelectorAll('.edit-student');
+
+        editLink.forEach(link=>{
+            link.addEventListener('click',function(){
+                const data = this.getAttribute('data-page');
+                console.log(data);
+                editStudent('./student/edit.html' ,data);
+            });
+        });
+    }
+    
     async function fetchStudents(classs , section) {
         let ClassName=document.getElementById('name-of-class');
         ClassName.innerHTML='الصف '+classs;
@@ -133,7 +147,7 @@
                         <td>${student.motherPhone || 'N/A'}</td>
                         <td><input type="checkbox" class="studentCheckbox" data-index="${student._id}" /></td>
                         <td>
-                            <a href="#" onclick="editStudent('./student/edit.html',' ${student._id}')">
+                            <a href="#" class="edit-student" data-page='${student._id}' >
                                 <i class="far fa-edit"></i>
                             </a>
                             <a href="#" onclick="deleteStudent('${student._id}' , '${student.name}' , '${student.section}')" >
@@ -143,6 +157,7 @@
                     `;
                     tableBody.appendChild(row);
                 });
+                AddLink();
             } else {
                 tableBody.innerHTML = '<tr><td colspan="5">لا يوجد طلاب</td></tr>';
             }
@@ -150,6 +165,12 @@
             document.getElementById('students-table').innerHTML = `<tr><td colspan="5" style="color: red;">خطأ: ${error.message}</td></tr>`;
         }
     }
+
+
+
+
+
+
 
     async function deleteStudent(studentId , name , section){
         const confirmation = confirm(`هل أنت متأكد من حذف هذه الطالبة_____( ${name} ) ؟`);
@@ -195,6 +216,7 @@
             const result = await response.json();
             if(response.ok){
                 alert(result.message);
+
             }
             else{
                 alert('خطأ في الاضافة');
@@ -205,7 +227,7 @@
         }
     }
     
-
+    
 
 
     function editStudent(page ,studentId) {

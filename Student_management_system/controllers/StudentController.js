@@ -89,33 +89,30 @@ export const DeleteStudent = async(req , res)=>{
 
 export const UpdateStudent = async(req,res)=>{
     const{id , name , classs , section , fatherPhone , motherPhone} = req.body;
-
     try{
-        const checkName = await Student.findOne({name:name});
-        if(checkName._id === id){
-            const UpdateStudent = await Student.updateOne(
-                {_id : id},
-                {
-                    name: name,
-                    section : section,
-                    class : classs,
-                    fatherPhone : fatherPhone,
-                    motherPhone : motherPhone
-                }
-            );
-            if (UpdateStudent.modifiedCount != 0) {
-                res.status(StatusCode.Ok).send({message:"تم التحديث بنجاح"});
+        const UpdateStudent = await Student.updateOne(
+            {_id : id},
+            {
+                name: name,
+                section : section,
+                class : classs,
+                fatherPhone : fatherPhone,
+                motherPhone : motherPhone
             }
-            else {
-                res.status(StatusCode.ServerError).send({message:"خطأ في التحديث حاول مرة اخرى"});
-            }
+        );
+        if (UpdateStudent.modifiedCount != 0) {
+            return res.status(StatusCode.Ok).send({message:"تم التحديث بنجاح"});
         }
-        else{
-            res.status(StatusCode.BadRequst).send({message:"خطأ اثناء التحديث. الاسم المدخل خاص بطالبة اخرى "});
+        else {
+            return res.status(StatusCode.Ok).send({message:"لم تقم بإجراء اي تعديل"});
         }
+
     }
     catch (e) {
-        return res.status(StatusCode.ServerError).send({message:"خطأ في تحديث البيانات حاول مرة اخرى"});
+        return res.status(StatusCode.BadRequst).send({message:'خطأ في التعديل الإسم المدخل خاص بطالبة اخرى'});
     }
 }
+
+
+
 
