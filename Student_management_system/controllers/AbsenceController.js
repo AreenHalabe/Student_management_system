@@ -125,6 +125,10 @@ export const GetAbsenceByDate = async(req , res)=>{
                     },
                 },
             ]);
+
+            if(absences.length==0){
+                return res.status(StatusCode.Ok).send({message:`لا يوجد غياب للطلاب ب هذا التاريخ(${dateString})`});
+            }
             
             const formattedAbsences = absences.map(absence => ({
                 _id:absence._id,
