@@ -47,10 +47,14 @@ export const CreateStudentAbsence = async (req, res) => {
 
     try {
         const today = new Date();
-        today.setUTCHours(0, 0, 0, 0); // Use UTC instead of local time
+        const newDate=today.toLocaleDateString();
+        console.log('type of date-----',typeof(today.toLocaleDateString()));
+        console.log(today.toLocaleTimeString());
+        today.setHours(0, 0, 0, 0); // Use UTC instead of local time
 
+        console.log(today);
         const tomorrow = new Date(today);
-        tomorrow.setUTCDate(today.getUTCDate() + 1); // Move to the next day in UTC
+        tomorrow.setDate(today.getDate() + 1); // Move to the next day in UTC
 
         // Check for existing absences
         const existingAbsences = await Absence.find({
@@ -65,7 +69,7 @@ export const CreateStudentAbsence = async (req, res) => {
         const existingIds = existingAbsences.map(a => a.student.toString());
         const newAbsences = studentIds.filter(id => !existingIds.includes(id)).map(studentId => ({
             student: studentId,
-            date: today, // This is now in UTC
+            date: newDate, // This is now in UTC
         }));
 
 
@@ -76,7 +80,7 @@ export const CreateStudentAbsence = async (req, res) => {
             res.status(StatusCode.Ok).send({message: 'كل الطالبات المحددات موجودة بالفعل في قائمة الغياب لهذا اليوم.'});
         }
     } catch (e) {
-        res.status(StatusCode.ServerError).send({message:"wrong sentence in the id"});
+        res.status(StatusCode.ServerError).send({message:e.message});
     }
 };
 
@@ -91,9 +95,9 @@ export const GetAbsenceByDate = async(req , res)=>{
             return res.status(400).send({ message: "Invalid date format." });
         }
 
-        date.setUTCHours(0, 0, 0, 0);
+        date.setHours(0, 0, 0, 0);
         const nextDay = new Date(date);
-        nextDay.setUTCDate(date.getUTCDate() + 1);
+        nextDay.setDate(date.getDate() + 1);
 
         try{
             const absences =await Absence.aggregate([
@@ -152,9 +156,9 @@ export const GetAbsenceByClassAndSection = async(req , res)=>{
             return res.status(400).send({ message: "Invalid date format." });
         }
 
-        date.setUTCHours(0, 0, 0, 0);
+        date.setHours(0, 0, 0, 0);
         const nextDay = new Date(date);
-        nextDay.setUTCDate(date.getUTCDate() + 1);
+        nextDay.setDate(date.getDate() + 1);
     
         const sectionInt = parseInt(section, 10);
 
@@ -191,6 +195,10 @@ export const GetAbsenceByClassAndSection = async(req , res)=>{
                     },
                 },
             ]);
+
+            if(absences.length==0){
+                return res.status(StatusCode.Ok).send({message:`لا يوجد غياب للطلاب ب هذا التاريخ(${dateString}) للصف (${classs}) شعبة(${section})`});
+            }
     
             const formattedAbsences = absences.map(absence => ({
                 _id:absence._id,
