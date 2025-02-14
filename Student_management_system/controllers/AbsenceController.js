@@ -1,11 +1,7 @@
 import { body, query } from "express-validator";
 import { StatusCode } from "../HTTPSStatusCode/StatusCode.js";
 import { Absence } from "../models/Absence.js";
-import {format} from'date-fns';
 
-const formatDate = (date) => {
-    return format(date, 'yyyy-MM-dd');
-};
 
 export const GetStudnetAbsence  = async(req,res)=>{
 
@@ -37,7 +33,6 @@ export const DeleteAbsence = async(req,res)=>{
 
 
 
-
 export const CreateStudentAbsence = async (req, res) => {
     const { studentIds } = req.body; 
 
@@ -47,29 +42,18 @@ export const CreateStudentAbsence = async (req, res) => {
 
     try {
         const today = new Date();
-        const newDate=today.toLocaleDateString();
-        console.log('type of date-----',typeof(today.toLocaleDateString()));
-        console.log(today.toLocaleTimeString());
-        today.setHours(0, 0, 0, 0); // Use UTC instead of local time
+        const localDateString = today.toISOString().split('T')[0]; // "YYYY-MM-DD"
 
-        console.log(today);
-        const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1); // Move to the next day in UTC
-
-        // Check for existing absences
         const existingAbsences = await Absence.find({
             student: { $in: studentIds },
-            date: { 
-                $gte: today, 
-                $lt: tomorrow // Ensure correct day boundary in UTC
-            }
+            date: localDateString
+
         });
 
-        // Filter out IDs that already have an absence today
         const existingIds = existingAbsences.map(a => a.student.toString());
         const newAbsences = studentIds.filter(id => !existingIds.includes(id)).map(studentId => ({
             student: studentId,
-            date: newDate, // This is now in UTC
+            date: localDateString,
         }));
 
 
@@ -95,10 +79,7 @@ export const GetAbsenceByDate = async(req , res)=>{
             return res.status(400).send({ message: "Invalid date format." });
         }
 
-        date.setHours(0, 0, 0, 0);
-        const nextDay = new Date(date);
-        nextDay.setDate(date.getDate() + 1);
-
+        const localDateString = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
         try{
             const absences =await Absence.aggregate([
                 {
@@ -112,10 +93,7 @@ export const GetAbsenceByDate = async(req , res)=>{
                 { $unwind: "$student" },
                 { $match: 
                     {
-                        "date":{
-                            $gte: date,
-                            $lt: nextDay
-                        }
+                        "date":localDateString
                     } 
                 },
                 {
@@ -134,13 +112,8 @@ export const GetAbsenceByDate = async(req , res)=>{
                 return res.status(StatusCode.Ok).send({message:`لا يوجد غياب للطلاب ب هذا التاريخ(${dateString})`});
             }
             
-            const formattedAbsences = absences.map(absence => ({
-                _id:absence._id,
-                date: formatDate(absence.date), // Format the date here
-                student: absence.student // Include the populated student data
-            }));
-    
-            res.status(StatusCode.Ok).send(formattedAbsences);
+
+            res.status(StatusCode.Ok).send(absences);
         }
         catch(e){
             res.status(StatusCode.ServerError).send("خطأ في السيرفر حاول مرة اخرى");
@@ -156,10 +129,8 @@ export const GetAbsenceByClassAndSection = async(req , res)=>{
             return res.status(400).send({ message: "Invalid date format." });
         }
 
-        date.setHours(0, 0, 0, 0);
-        const nextDay = new Date(date);
-        nextDay.setDate(date.getDate() + 1);
-    
+        const localDateString = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+
         const sectionInt = parseInt(section, 10);
 
         try{
@@ -175,10 +146,7 @@ export const GetAbsenceByClassAndSection = async(req , res)=>{
                 { $unwind: "$student" },
                 { $match: 
                     {
-                        "date":{
-                            $gte: date,
-                            $lt: nextDay
-                        },
+                        "date":localDateString ,
                         "student.class": `${classs}`,
                         "student.section": sectionInt
                         
@@ -186,7 +154,7 @@ export const GetAbsenceByClassAndSection = async(req , res)=>{
                 },
                 {
                     $project: {
-                        _id: 1, // Keep the absence ID if needed
+                        _id: 1, // Keep the absence ID 
                         date: 1, // Keep the date field
                         "student.name": 1, // Only include the name from the student
                         "student._id":1,
@@ -200,13 +168,7 @@ export const GetAbsenceByClassAndSection = async(req , res)=>{
                 return res.status(StatusCode.Ok).send({message:`لا يوجد غياب للطلاب ب هذا التاريخ(${dateString}) للصف (${classs}) شعبة(${section})`});
             }
     
-            const formattedAbsences = absences.map(absence => ({
-                _id:absence._id,
-                date: formatDate(absence.date), // Format the date here
-                student: absence.student // Include the populated student data
-            }));
-    
-            res.status(StatusCode.Ok).send(formattedAbsences);
+            res.status(StatusCode.Ok).send(absences);
         }
         catch(e){
             res.status(StatusCode.ServerError).send("خطأ في السيرفر حاول مرة اخرى");
