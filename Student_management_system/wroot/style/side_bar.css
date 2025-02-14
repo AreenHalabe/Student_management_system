@@ -1,74 +1,60 @@
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-  }
+body {
+    margin: 0;
+    height: 100vh;
+    overflow-y: auto;
+    direction: rtl; /* Ensures RTL layout */
+    text-align: right;
+}
+
+.content{
+     display: flex;
+    justify-content: center;
+    width: 100%;
+    /* overflow-y: auto; */
+}
   
-  html {
-      position: relative;
-      min-height: 100%;
-  }
+.sub_content{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar {
+    width: 100%;
+    height: 100%;
+    background: #3B3E7C; /* Sidebar background color */
+    display: flex;
+    flex-direction: column;
+    margin: 0; /* Remove any default margin */
+}
+ul{
+    border-radius: 24px;
+    padding: 20px;
+    width: 100%;
+}
+
   
-  body {
-    margin-bottom: 60px;
-    
-    
-  }
+
+.sidebar .nav-link {
+    color: #ffffff;
+    text-align: right;
+}
   
-  
-  #wrapper {
-      display: flex;
-      flex-direction: row;
-    gap:20%;
-  
-  }
-  
-  
-  .sidebar {
-      min-width: 250px;
-      background: #2e59d9; /* Sidebar background color */
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      position: fixed;
-  }
-  
-      .sidebar > li {
-          padding: 5px;
-      }
-  
-  .content-wrapper {
-      padding: 20px;
-      flex-grow: 1;
-  }
-  
-  .sidebar .nav-link {
-      color: #ffffff;
-  }
-  
-      .sidebar .nav-link:hover {
-          background: #1e3d73;
-      }
-  
+.sidebar .nav-link:hover {
+    background: white;
+    color: #3B3E7C;
+    cursor: pointer;
+}
   
   
+a{
+    border-radius: 20px;
+}
   
   
-  .submenu {
-      padding-left: 20px; /* Indent submenu items */
-  }
-  
-      .submenu .nav-link {
-          color: #ffffff;
-      }
-  
-          .submenu .nav-link:hover {
-              background-color: #1e3d73;
-          }
-  
-  .d-none {
-      display: none !important;
-  }
-  
-  .sidebar .nav-item.mt-auto {
-      margin-top: auto; /* Push to the bottom */
-  }
-  
+.sidebar a.active {
+    background-color: #ECE6F0;
+    color: #3B3E7C;
+
+}

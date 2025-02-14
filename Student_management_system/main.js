@@ -24,6 +24,7 @@ app.on('ready' , function(){
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: true,
+            webSecurity: false
           },
         protocol:'file:',
         slashes:true

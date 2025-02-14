@@ -1,13 +1,11 @@
 import mongoose, { Schema } from "mongoose";
 
 const absenceSchema = new Schema({
-    studentId: {
+    student: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'students',
     },
-    date: {
-        type: Date,
-    }
+    date: String
 });
 
 
