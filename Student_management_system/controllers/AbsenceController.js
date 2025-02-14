@@ -42,7 +42,9 @@ export const CreateStudentAbsence = async (req, res) => {
 
     try {
         const today = new Date();
-        const localDateString = today.toISOString().split('T')[0]; // "YYYY-MM-DD"
+
+
+        const localDateString = today.toLocaleDateString('en-CA'); // "YYYY-MM-DD"
 
         const existingAbsences = await Absence.find({
             student: { $in: studentIds },
@@ -79,7 +81,7 @@ export const GetAbsenceByDate = async(req , res)=>{
             return res.status(400).send({ message: "Invalid date format." });
         }
 
-        const localDateString = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+        const localDateString = date.toLocaleDateString('en-CA'); // "YYYY-MM-DD"
         try{
             const absences =await Absence.aggregate([
                 {
@@ -129,7 +131,7 @@ export const GetAbsenceByClassAndSection = async(req , res)=>{
             return res.status(400).send({ message: "Invalid date format." });
         }
 
-        const localDateString = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+        const localDateString = date.toLocaleDateString('en-CA'); // "YYYY-MM-DD"
 
         const sectionInt = parseInt(section, 10);
 
