@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
-            console.log('clicked');
             const page = this.getAttribute('data-page');
             ChangeContent(page, this);
         });
