@@ -10,6 +10,8 @@ function ChangeSection(element , Editesection){
 }
 
 function getQueryParams(section) {
+    const btn = document.getElementById('btnn');
+    btn.addEventListener('click' , SendAbsence);
     let navlist= document.querySelectorAll('.n-link');
     const classs = sessionStorage.getItem('classs');
     if(section === '1'){
@@ -18,8 +20,6 @@ function getQueryParams(section) {
     fetchStudents(classs,section);
 }
 
-
-
 function AddLink(){
     const editLink = document.querySelectorAll('.edit-student');
     const deleteLink = document.querySelectorAll('.delete-student');
@@ -27,7 +27,7 @@ function AddLink(){
         link.addEventListener('click',function(){
             const data = this.getAttribute('data-page');
             console.log(data);
-            editStudent('./student/edit.html' ,data);
+            editStudent('edit.html' ,data);
         });
     });
 
@@ -38,7 +38,6 @@ function AddLink(){
         })
     })
 }
-
 
 async function fetchStudents(classs , section) {
     let ClassName=document.getElementById('name-of-class');
@@ -121,7 +120,7 @@ async function SendAbsence () {
 
     if(studentIds.length === 0){
         alert('يجب تحديد طالبة على الأقل');
-        return
+        return;
     }
     const url = 'http://localhost:3000/student/create/absence';
     try{
@@ -137,16 +136,20 @@ async function SendAbsence () {
         const result = await response.json();
         if(response.ok){
             alert(result.message);
+            return;
 
         }
         else{
             alert('خطأ في الاضافة');
+            return;
         }
     }
     catch(e){
         alert('خطأ في الاتصال في الخادم');
+        return;
     }
 }
+
 
 
 
@@ -155,7 +158,6 @@ function editStudent(page ,studentId) {
     const content = document.getElementById('sub_content');
     stuId = JSON.stringify(studentId);
     sessionStorage.setItem('studentId', stuId.trim()); 
-
 
     fetch(page)
         .then(response => {
@@ -174,12 +176,20 @@ function editStudent(page ,studentId) {
 }
 
 function executeScripts(element) {
-    const scripts = element.getElementsByTagName('script');
-    for (let i = 0; i < scripts.length; i++) {
+    const scripts = element.querySelectorAll('script');
+
+    scripts.forEach(oldScript => {
         const newScript = document.createElement('script');
-        newScript.text = scripts[i].text; 
-        document.body.appendChild(newScript).parentNode.removeChild(newScript); 
-    }
+
+        if (oldScript.src) {
+            newScript.src = oldScript.src + "?nocache=" + new Date().getTime(); // Prevent caching
+        } else {
+            newScript.textContent = oldScript.textContent;
+        }
+
+        newScript.async = true;
+        document.body.appendChild(newScript);
+    });
 }
 
 

@@ -14,27 +14,16 @@ function ChangeContent(page , params){
 
 }
 
-
-
-
 function OnLoad(){
     const cards = document.querySelectorAll('.card-body');
     cards.forEach(card => {
         card.addEventListener('click', function() {
-            console.log("Card clicked! OnLoad");
-
             const page = this.getAttribute('data-page');
             const params = this.getAttribute('data-params');
             ChangeContent(page , params);
         });
     });
 }
-
-
-
-
-
-
 
 function navigateTo(page , content){
     fetch(page)
