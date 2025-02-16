@@ -51,12 +51,17 @@ ipcMain.on("show-alert", (event, message) => {
   }
 });
 
-
-
-
-
-
-
+ipcMain.handle("show-confirm", async (event, message) => {
+  const result = await dialog.showMessageBox(mainWindow, {
+      type: "warning",
+      title: "تأكيد",
+      message: message,
+      buttons: ["إلغاء", "موافق"],
+      defaultId: 1,
+      cancelId: 0,
+  });
+  return result.response === 1; // Return true if "موافق" is clicked
+});
 
 
 app.on('will-quit', () => {

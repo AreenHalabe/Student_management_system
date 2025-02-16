@@ -57,8 +57,6 @@ document.getElementById('studentForm').addEventListener('submit', async (event) 
         const messageDiv = document.getElementById('message');
         if (response.ok) {
             messageDiv.innerHTML = `<div class="alert alert-success">${result.message}</div>`;
-            //alert(`${result.message}`);
-            
         } 
         else if(result.message){
             messageDiv.innerHTML = `<div class="alert alert-danger">${result.message}</div>`;

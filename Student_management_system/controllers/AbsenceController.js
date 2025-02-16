@@ -111,7 +111,7 @@ export const GetAbsenceByDate = async(req , res)=>{
             ]);
 
             if(absences.length==0){
-                return res.status(StatusCode.Ok).send({message:`لا يوجد غياب للطلاب ب هذا التاريخ(${dateString})`});
+                return res.status(StatusCode.Ok).send({message:`لا يوجد غياب للطلاب ب هذا التاريخ (${dateString})`});
             }
             
 
@@ -167,7 +167,7 @@ export const GetAbsenceByClassAndSection = async(req , res)=>{
             ]);
 
             if(absences.length==0){
-                return res.status(StatusCode.Ok).send({message:`لا يوجد غياب للطلاب ب هذا التاريخ(${dateString}) للصف (${classs}) شعبة(${section})`});
+                return res.status(StatusCode.Ok).send({message:`لا يوجد غياب للطلاب ب هذا التاريخ (${dateString}) للصف (${classs}) شعبة(${section})`});
             }
     
             res.status(StatusCode.Ok).send(absences);

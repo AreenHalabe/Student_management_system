@@ -100,6 +100,7 @@ export const UpdateStudent = async(req,res)=>{
                 motherPhone : motherPhone
             }
         );
+
         if (UpdateStudent.modifiedCount != 0) {
             return res.status(StatusCode.Ok).send({message:"تم التحديث بنجاح"});
         }

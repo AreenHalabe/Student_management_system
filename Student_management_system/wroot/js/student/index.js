@@ -93,7 +93,9 @@ async function deleteStudent(data){
     const section = queryParams.get('section'); 
 
 
-    const confirmation = confirm(`هل أنت متأكد من حذف هذه الطالبة_____( ${name} ) ؟`);
+    // const confirmation = confirm(`هل أنت متأكد من حذف هذه الطالبة_____( ${name} ) ؟`);
+    // if (!confirmation) return;
+    const confirmation = await window.electronAPI.showConfirm(`هل أنت متأكد من حذف هذه الطالبة_____( ${name} ) ؟`);
     if (!confirmation) return;
 
 
