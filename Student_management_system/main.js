@@ -1,5 +1,5 @@
 
-import  electron  from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import { fileURLToPath } from "url";
 import  path  from 'path';
 import {server} from "./server.js"
@@ -10,22 +10,24 @@ const __dirname = path.dirname(__filename);
 
 let serverProcess;
 
-const { app , BrowserWindow } = electron;
+
 
 let mainWindow;
 
 app.on('ready' , function(){
     serverProcess = server;
 
-    mainWindow = new BrowserWindow({});
+    mainWindow = new BrowserWindow({
+      webPreferences: {
+        preload: path.join(__dirname, "preload.js"),
+        contextIsolation: true,
+        nodeIntegration: false,
+        webSecurity: false
+      },
+    });
 
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname , './views/mainWindow.html'),
-        webPreferences: {
-            contextIsolation: true,
-            nodeIntegration: true,
-            webSecurity: false
-          },
         protocol:'file:',
         slashes:true
     }));
@@ -38,10 +40,30 @@ app.on('ready' , function(){
       });
 });
 
+ipcMain.on("show-alert", (event, message) => {
+  if (mainWindow) {
+      dialog.showMessageBox(mainWindow, {
+          type: "info",
+          title: "تنبيه",
+          message: message,
+          buttons: ["موافق"],
+      });
+  }
+});
+
+
+
+
+
+
+
+
+
 app.on('will-quit', () => {
     if (serverProcess && serverProcess.close) {
       serverProcess.close(() => {
         console.log('Server stopped gracefully.');
       });
     }
-  });
+});
+

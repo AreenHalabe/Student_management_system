@@ -1,3 +1,4 @@
+
 function ChangeSection(element , Editesection){
     let navlist= document.querySelectorAll('.n-link');
 
@@ -119,7 +120,7 @@ async function SendAbsence () {
     });
 
     if(studentIds.length === 0){
-        alert('يجب تحديد طالبة على الأقل');
+        window.electronAPI.showAlert('يجب تحديد طالبة على الأقل');
         return;
     }
     const url = 'http://localhost:3000/student/create/absence';
@@ -131,21 +132,20 @@ async function SendAbsence () {
             },
             body:JSON.stringify({studentIds})
         });
-        console.log("responsceeeeee",response)
+
         
         const result = await response.json();
         if(response.ok){
-            alert(result.message);
-            return;
-
+            console.log(result.message);
+            window.electronAPI.showAlert(`${result.message}`);
         }
         else{
-            alert('خطأ في الاضافة');
+            window.electronAPI.showAlert(`${result.message}`);
             return;
         }
     }
     catch(e){
-        alert('خطأ في الاتصال في الخادم');
+        window.electronAPI.showAlert(e.message);
         return;
     }
 }

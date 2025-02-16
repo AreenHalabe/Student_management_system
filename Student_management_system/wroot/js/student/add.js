@@ -1,3 +1,4 @@
+
 document.getElementById('studentForm').addEventListener('submit', async (event) => {
     event.preventDefault(); // Prevent the default form submission
     const name = document.getElementById('name').value;
@@ -45,3 +46,5 @@ document.getElementById('studentForm').addEventListener('submit', async (event) 
         messageDiv.innerHTML = `<div class="alert alert-danger">حدث خطأ أثناء الاتصال بالخادم</div>`;
     }
 });
+
+
