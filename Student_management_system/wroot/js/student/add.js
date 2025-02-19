@@ -26,7 +26,6 @@ document.getElementById('studentForm').addEventListener('submit', async (event) 
         });
 
         const result = await response.json();
-        console.log(result);
 
         const messageDiv = document.getElementById('message');
         if (response.ok) {
@@ -41,7 +40,6 @@ document.getElementById('studentForm').addEventListener('submit', async (event) 
         }
 
     } catch (error) {
-        console.error('Error:', error);
         const messageDiv = document.getElementById('message');
         messageDiv.innerHTML = `<div class="alert alert-danger">حدث خطأ أثناء الاتصال بالخادم</div>`;
     }
