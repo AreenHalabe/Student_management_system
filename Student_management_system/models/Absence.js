@@ -5,7 +5,7 @@ const absenceSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'students',
     },
-    date: String
+    date: {type:String , index:true}
 });
 
 

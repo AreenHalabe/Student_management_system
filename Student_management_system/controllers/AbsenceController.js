@@ -1,6 +1,7 @@
 import { body, query } from "express-validator";
 import { StatusCode } from "../HTTPSStatusCode/StatusCode.js";
 import { Absence } from "../models/Absence.js";
+import { Student } from "../models/student.js";
 
 
 export const GetStudnetAbsence  = async(req,res)=>{
@@ -43,7 +44,6 @@ export const CreateStudentAbsence = async (req, res) => {
     try {
         const today = new Date();
 
-
         const localDateString = today.toLocaleDateString('en-CA'); // "YYYY-MM-DD"
 
         const existingAbsences = await Absence.find({
@@ -59,9 +59,19 @@ export const CreateStudentAbsence = async (req, res) => {
         }));
 
 
+        
+
+
         if (newAbsences.length > 0) {
             await Absence.insertMany(newAbsences);
-            res.status(StatusCode.Ok).send({message: 'تم إضافة الغياب للطالبات'});
+            const students = await populateStudent(newAbsences);
+            res.status(StatusCode.Ok).send(
+                {
+                    message: 'تم إضافة الغياب للطالبات',
+                    students
+                }
+                
+            );
         } else {
             res.status(StatusCode.Ok).send({message: 'كل الطالبات المحددات موجودة بالفعل في قائمة الغياب لهذا اليوم.'});
         }
@@ -177,3 +187,17 @@ export const GetAbsenceByClassAndSection = async(req , res)=>{
         }
 }
     
+
+
+async function populateStudent(newAbsences){
+    let studentIds =[];
+    studentIds = newAbsences.map(absence => absence.student);
+    try{
+        const studentList = await Student.find({ _id: { $in: studentIds } });
+        return studentList;
+    }
+    catch(e){
+        console.error(e);
+    }
+   
+}
