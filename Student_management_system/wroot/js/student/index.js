@@ -122,7 +122,7 @@ async function SendAbsence () {
     });
 
     if(studentIds.length === 0){
-        window.electronAPI.showAlert('يجب تحديد طالبة على الأقل');
+       return window.electronAPI.showAlert('يجب تحديد طالبة على الأقل');
     }
     const url = 'http://localhost:3000/student/create/absence';
     try{
