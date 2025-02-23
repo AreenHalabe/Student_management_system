@@ -26,7 +26,7 @@ export const AllStudentsByClassAndSection = async(req , res)=>{
                 class : classs ,
                 section : section
             }
-        );
+        ).sort({ name: 1 });
 
         
         if(students.length != 0){

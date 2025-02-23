@@ -68,7 +68,8 @@ export const CreateStudentAbsence = async (req, res) => {
             res.status(StatusCode.Ok).send(
                 {
                     message: 'تم إضافة الغياب للطالبات',
-                    students
+                    students,
+                    localDateString
                 }
                 
             );

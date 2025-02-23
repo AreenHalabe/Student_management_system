@@ -123,7 +123,6 @@ async function SendAbsence () {
 
     if(studentIds.length === 0){
         window.electronAPI.showAlert('يجب تحديد طالبة على الأقل');
-        return;
     }
     const url = 'http://localhost:3000/student/create/absence';
     try{
@@ -139,19 +138,58 @@ async function SendAbsence () {
         const result = await response.json();
         if(response.ok){
             console.log(result.message);
+            if(result.students){
+               await sendSMS(result.students , result.localDateString);
+            }
             window.electronAPI.showAlert(`${result.message}`);
         }
         else{
             window.electronAPI.showAlert(`${result.message}`);
-            return;
         }
     }
     catch(e){
         window.electronAPI.showAlert(e.message);
-        return;
     }
 }
 
+
+ async function sendSMS(students , date){
+    // console.log(students);
+    // console.log(date);
+    const url = "http://hotsms.ps/sendbulksms.php";
+    const api_token = "679b3376b1ee4";
+    const sender = "Askar G-S1";
+    const type= "0";
+
+    for(const student of students){
+        const data = {
+            api_token:api_token,
+            sender:sender,
+            type:type,
+            mobile: `${student.fatherPhone}`,
+            text: `الأهل الكرام نعلمكم أن إبنتكم ( ${student.name} ) قد تغيبت اليوم الموافق ( ${date} ) عن الدوام المدرسي راجين من حضرتكم توضيح سبب الغياب.\nتقبلو الاحترام`
+        };
+
+        try{
+            const response = await fetch(url,{
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams(data).toString()
+            });
+
+            const result = await response.text(); // or response.json() if the API returns JSON
+            console.log(`SMS sent to ${student.fatherPhone}:`, result);
+        }
+        catch(e){
+            console.log(e.message);
+        }
+    }
+    
+
+
+}
 
 
 
