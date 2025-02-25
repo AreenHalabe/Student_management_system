@@ -59,11 +59,11 @@ async function fetchStudents(classs , section) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${student.name}</td>
-                    <td>${student.class}</td>
-                    <td>${student.section}</td>
                     <td>${student.fatherPhone || 'N/A'}</td>
                     <td>${student.motherPhone || 'N/A'}</td>
-                    <td><input type="checkbox" class="studentCheckbox" data-index="${student._id}" /></td>
+                    <td><input type="checkbox" class="studentCheckboxAbsence" data-index="${student._id}" /></td>
+                    <td><input type="checkbox" class="studentCheckboxLate" data-index="${student._id}" /></td>
+                    <td><input type="checkbox" class="studentCheckboxBehavior" data-index="${student._id}" /></td>
                     <td>
                         <a href="#" class="edit-student" data-page='${student._id}' >
                             <i class="far fa-edit"></i>
@@ -113,17 +113,72 @@ async function deleteStudent(data){
     }
 }
 
-
-async function SendAbsence () {
-    const studentIds = [];
-    document.querySelectorAll(".studentCheckbox:checked").forEach((checkbox) => {
+function GetStudentLate(){
+    const studentLate =[];
+    document.querySelectorAll('.studentCheckboxLate:checked').forEach((checkbox)=>{
         let studentId = checkbox.getAttribute("data-index");
-        studentIds.push(studentId);
+        studentLate.push(studentId);
     });
+    return studentLate;
+}
 
-    if(studentIds.length === 0){
-       return window.electronAPI.showAlert('يجب تحديد طالبة على الأقل');
+
+function GetStudentBehavior(){
+    const studentBehavior =[];
+    document.querySelectorAll(".studentCheckboxBehavior:checked").forEach((checkbox)=>{
+        let studentId = checkbox.getAttribute("data-index");
+        studentBehavior.push(studentId);
+    });
+    return studentBehavior;
+}
+
+function GetStudentAbsence(){
+    const studentAbsence = [];
+    document.querySelectorAll(".studentCheckboxAbsence:checked").forEach((checkbox) => {
+        let studentId = checkbox.getAttribute("data-index");
+        studentAbsence.push(studentId);
+    });
+    return studentAbsence;
+}
+
+async function SaveLate(studentIds){
+    const url = 'http://localhost:3000/student/late/add';
+    try{
+        const response = await fetch(url,{
+            method:'POST',
+            headers: {
+                'Content-Type': 'application/json' 
+            },
+            body:JSON.stringify({studentIds})
+        });
+        // const result = await response.json();
+        // return result.message;
     }
+    catch(e){
+        window.electronAPI.showAlert(e.message);
+    }
+}
+
+async function SaveBehavior(studentIds) {
+    const url='http://localhost:3000/student/behavior/add';
+    try{
+        const response = await fetch(url,{
+            method:'POST',
+            headers: {
+                'Content-Type': 'application/json'  
+            },
+            body:JSON.stringify({studentIds})
+        });
+        // const result = await response.json();
+        // return result.message;
+
+    }
+    catch(e){
+        window.electronAPI.showAlert(e.message);
+    }
+}
+
+async function SaveAbsence(studentIds) {
     const url = 'http://localhost:3000/student/create/absence';
     try{
         const response = await fetch(url,{
@@ -135,21 +190,47 @@ async function SendAbsence () {
         });
 
         
-        const result = await response.json();
-        if(response.ok){
-            console.log(result.message);
-            if(result.students){
-               await sendSMS(result.students , result.localDateString);
-            }
-            window.electronAPI.showAlert(`${result.message}`);
-        }
-        else{
-            window.electronAPI.showAlert(`${result.message}`);
-        }
+        // const result = await response.json();
+        // return result.message;
+        // if(response.ok){
+        //     console.log(result.message);
+        //     // if(result.students){
+        //     //    await sendSMS(result.students , result.localDateString);
+        //     // }
+        //     window.electronAPI.showAlert(`${result.message}`);
+        // }
+        // else{
+        //     window.electronAPI.showAlert(`${result.message}`);
+        // }
     }
     catch(e){
         window.electronAPI.showAlert(e.message);
     }
+}
+
+
+
+
+async function SendAbsence () {
+
+    const studentsAbsence = GetStudentAbsence();
+    const studentsLate = GetStudentLate();
+    const studentsBehavior = GetStudentBehavior();
+
+    if(studentsAbsence.length === 0 && studentsLate.length === 0 && studentsBehavior.length === 0){
+        return window.electronAPI.showAlert('يجب تحديد طالبة على الأقل');
+    }
+    if(studentsAbsence.length > 0){
+        SaveAbsence(studentsAbsence);
+    }
+    if(studentsLate.length >0){
+        SaveLate(studentsLate);
+    }
+    if(studentsBehavior.length){
+        SaveBehavior(studentsBehavior);
+    }
+
+    window.electronAPI.showAlert('تم الحفظ بنجاح');
 }
 
 
@@ -190,8 +271,6 @@ async function SendAbsence () {
 
 
 }
-
-
 
 
 function editStudent(page ,studentId) {
