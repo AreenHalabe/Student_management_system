@@ -151,8 +151,7 @@ async function SaveLate(studentIds){
             },
             body:JSON.stringify({studentIds})
         });
-        // const result = await response.json();
-        // return result.message;
+        
     }
     catch(e){
         window.electronAPI.showAlert(e.message);
@@ -169,8 +168,6 @@ async function SaveBehavior(studentIds) {
             },
             body:JSON.stringify({studentIds})
         });
-        // const result = await response.json();
-        // return result.message;
 
     }
     catch(e){
@@ -190,18 +187,12 @@ async function SaveAbsence(studentIds) {
         });
 
         
-        // const result = await response.json();
-        // return result.message;
-        // if(response.ok){
-        //     console.log(result.message);
-        //     // if(result.students){
-        //     //    await sendSMS(result.students , result.localDateString);
-        //     // }
-        //     window.electronAPI.showAlert(`${result.message}`);
-        // }
-        // else{
-        //     window.electronAPI.showAlert(`${result.message}`);
-        // }
+         const result = await response.json();
+         if(response.ok){
+            if(result.students){
+                sendSMS(result.students , result.localDateString);
+            }
+        }
     }
     catch(e){
         window.electronAPI.showAlert(e.message);
