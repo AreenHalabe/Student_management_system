@@ -46,7 +46,7 @@ export const GetLateByDate = async(req , res)=>{
     const Edate = new Date(EndDate);
 
     if(Sdate > Edate){
-        return res.status(StatusCode.BadRequst).json({message:'خطأ في إدخال الفترة يجب أن يكون تاريخ نهاية الفترة بعد تاريخ البداية'});
+        return res.status(StatusCode.BadRequst).json({errors:'خطأ في إدخال الفترة يجب أن يكون تاريخ نهاية الفترة بعد تاريخ البداية'});
     }
     
     const startDate = Sdate.toLocaleDateString('en-CA');
@@ -54,7 +54,7 @@ export const GetLateByDate = async(req , res)=>{
 
 
     try {
-        const studentsWithLates = await Late.aggregate([
+        const studentsLates = await Late.aggregate([
             {
                 $lookup: {
                     from: "students",
@@ -96,11 +96,11 @@ export const GetLateByDate = async(req , res)=>{
             }
         ]);
 
-        if (studentsWithLates.length === 0) {
-            return res.status(StatusCode.BadRequst).json({ message: `لا يوجد تأخر للطالبات من ( ${startDate} )ــــــ إلى ــــــ(${endDate})` });
+        if (studentsLates.length === 0) {
+            return res.status(StatusCode.Ok).send({ message: `لا يوجد تأخر للطالبات من ( ${startDate} )ــــــ إلى ــــــ(${endDate})` });
         }
 
-        res.status(StatusCode.Ok).json(studentsWithLates);
+        res.status(StatusCode.Ok).json({studentsLates:studentsLates});
     } catch (error) {
         res.status(StatusCode.BadRequst).json({ message : error.message });
     }
