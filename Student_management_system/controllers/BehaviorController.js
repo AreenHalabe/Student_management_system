@@ -36,8 +36,11 @@ export const GetBehaviorByDate = async(req,res)=>{
     const startDate = new Date(StartDate).toLocaleDateString('en-CA');
     const endDate = new Date(EndDate).toLocaleDateString('en-CA');
 
+    if(startDate > endDate){
+        return res.status(StatusCode.BadRequst).json({errors:'خطأ في إدخال الفترة يجب أن يكون تاريخ نهاية الفترة بعد تاريخ البداية'});
+    }
     try{
-        const studentWithBehavior = await Behavior.aggregate([
+        const studentBehavior = await Behavior.aggregate([
             {
                 $lookup: {
                     from: "students",
@@ -80,11 +83,11 @@ export const GetBehaviorByDate = async(req,res)=>{
         ]);
         
 
-        if (studentWithBehavior.length === 0) {
-            return res.status(StatusCode.BadRequst).json({ message: `لا يوجد سلوكيات للطالبات من ( ${startDate} )ــــــ إلى ــــــ(${endDate})` });
+        if (studentBehavior.length === 0) {
+            return res.status(StatusCode.Ok).json({ message: `لا يوجد سلوكيات للطالبات من ( ${startDate} )ــــــ إلى ــــــ(${endDate})` });
         }
 
-        res.status(StatusCode.Ok).json(studentWithBehavior);
+        res.status(StatusCode.Ok).json({studentBehavior:studentBehavior});
     }
     catch(e){
         res.status(StatusCode.BadRequst).send({message : e.message});

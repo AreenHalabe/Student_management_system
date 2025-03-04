@@ -212,13 +212,13 @@ async function SendAbsence () {
         return window.electronAPI.showAlert('يجب تحديد طالبة على الأقل');
     }
     if(studentsAbsence.length > 0){
-        SaveAbsence(studentsAbsence);
+       await SaveAbsence(studentsAbsence);
     }
     if(studentsLate.length >0){
-        SaveLate(studentsLate);
+      await  SaveLate(studentsLate);
     }
     if(studentsBehavior.length){
-        SaveBehavior(studentsBehavior);
+       await SaveBehavior(studentsBehavior);
     }
 
     window.electronAPI.showAlert('تم الحفظ بنجاح');

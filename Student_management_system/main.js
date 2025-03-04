@@ -1,5 +1,5 @@
 
-import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, BrowserWindow, ipcMain, dialog ,Menu } from "electron";
 import { fileURLToPath } from "url";
 import  path  from 'path';
 import {server} from "./server.js"
@@ -16,6 +16,8 @@ let mainWindow;
 
 app.on('ready' , function(){
     serverProcess = server;
+    Menu.setApplicationMenu(null);
+
 
     mainWindow = new BrowserWindow({
       webPreferences: {
