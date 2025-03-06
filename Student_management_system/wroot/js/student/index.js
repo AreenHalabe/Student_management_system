@@ -215,10 +215,10 @@ async function SendAbsence () {
        await SaveAbsence(studentsAbsence);
     }
     if(studentsLate.length >0){
-      await  SaveLate(studentsLate);
+       await SaveLate(studentsLate);
     }
     if(studentsBehavior.length){
-       await SaveBehavior(studentsBehavior);
+      await  SaveBehavior(studentsBehavior);
     }
 
     window.electronAPI.showAlert('تم الحفظ بنجاح');
@@ -226,20 +226,20 @@ async function SendAbsence () {
 
 
  async function sendSMS(students , date){
-    // console.log(students);
-    // console.log(date);
     const url = "http://hotsms.ps/sendbulksms.php";
     const api_token = "679b3376b1ee4";
     const sender = "Askar G-S1";
     const type= "0";
 
+    console.log(students);
+    
     for(const student of students){
         const data = {
             api_token:api_token,
             sender:sender,
             type:type,
             mobile: `${student.fatherPhone}`,
-            text: `الأهل الكرام نعلمكم أن إبنتكم ( ${student.name} ) قد تغيبت اليوم الموافق ( ${date} ) عن الدوام المدرسي راجين من حضرتكم توضيح سبب الغياب.\nتقبلو الاحترام`
+            text: `الأهل الكرام إبنتكم ${student.name} تغيبت اليوم ${date} عن الدوام`
         };
 
         try{

@@ -16,9 +16,7 @@ let mainWindow;
 
 app.on('ready' , function(){
     serverProcess = server;
-    Menu.setApplicationMenu(null);
-
-
+    //Menu.setApplicationMenu(null);
     mainWindow = new BrowserWindow({
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),

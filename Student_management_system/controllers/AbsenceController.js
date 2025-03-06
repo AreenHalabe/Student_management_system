@@ -195,10 +195,31 @@ async function populateStudent(newAbsences){
     studentIds = newAbsences.map(absence => absence.student);
     try{
         const studentList = await Student.find({ _id: { $in: studentIds } });
-        return studentList;
+
+       const students = removeMiddleNames(studentList);
+        return students;
     }
     catch(e){
         console.error(e);
     }
    
+}
+
+
+function removeMiddleNames(students) {
+    return students.map(student => {
+        const parts = student.name.trim().split(" ");
+        if (parts.length >= 5) {
+            return {
+                name: `${parts[0]} ${parts[parts.length - 2]} ${parts[parts.length - 1]}`,
+                fatherPhone: student.fatherPhone
+            };
+        } else if (parts.length >= 2) {
+            return {
+                name: `${parts[0]} ${parts[parts.length - 1]}`,
+                fatherPhone: student.fatherPhone
+            };
+        }
+        return student;
+    });
 }
