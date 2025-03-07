@@ -66,6 +66,7 @@ body {
   
 .sub_content{
     width: 95%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
