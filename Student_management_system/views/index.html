@@ -1,0 +1,104 @@
+
+<style>
+    table {
+        font-family: 'Dubai', sans-serif;
+        font-weight: normal;
+        font-style: normal;
+        font-size: 18px;
+        background-color: white;
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+    th {
+        background-color: #3B3E7C;
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+    .btn-custom {
+        font-family: 'Dubai', sans-serif;
+        font-weight: normal;
+        font-style: normal;
+        font-size: 18px;
+        background-color: #BFB1C1;
+        color: #454883;
+        border-radius: 20px;
+    }
+    .btn-custom:hover {
+        background: #454883;
+        color: #BFB1C1;
+    }
+    .table-container {
+        /* max-height: 470px; Set a max height for the table container */
+        height: 90%;
+        overflow-y: auto; /* Enable vertical scrolling */
+        margin-top: 8px; /* Add some margin for spacing */
+        width: 100%;
+    }
+    .active-link{
+        background-color: #454883;
+        color: white;
+    }
+    .btnn{
+        font-family: 'Dubai', sans-serif;
+        font-weight: normal;
+        font-style: normal;
+        font-size: 18px;
+        background-color: #4CAF50 ;
+        color: #FFFFFF;
+        border-radius: 24px;
+        width: 20%;
+    }
+    
+</style>
+
+
+
+    <div class="container d-flex flex-column mt-3" style="padding-top: 18px; gap: 30px;">
+        <div>
+            <span class="mb-3 title" id="name-of-class" style="font-size: 2rem;">   </span>
+            <hr>
+        </div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div class="d-flex justify-content-end gap-2 flex-wrap">
+                <button class="n-link btn btn-custom px-4" onclick="ChangeSection(this, 1)">الشعبة أ</button>
+                <button class="n-link btn btn-custom px-4" onclick="ChangeSection(this, 2)">الشعبة ب</button>
+                <button class="n-link btn btn-custom px-4" onclick="ChangeSection(this, 3)">الشعبة ج</button>
+            </div>
+            <button id="btnn" class="btn btnn btn-primary px-4">حفظ</button>
+            
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>إسم الطالبة</th>
+                    <th>رقم الأب</th>
+                    <th>رقم الأم</th>
+                    <th> غياب  </th>
+                    <th>   تأخر </th>
+                    <th>   سلوك خاطئ </th>
+                    <th> تعديل / حذف </th>
+                </tr>
+            </thead>
+            <tbody id="students-table">
+                <!-- Data will be inserted here -->
+                <tr><td colspan="7">جاري التحميل.......</td></tr>
+            </tbody>
+        </table>
+        
+    </div>
+    
+    
+
+
+<script type="module" src="../wroot/js/student/index.js"></script>
