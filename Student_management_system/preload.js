@@ -1,5 +1,9 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require("electron");
+contextBridge.exposeInMainWorld("electronAPI", {
+    showAlert: (message) => ipcRenderer.send("show-alert", message),
+    showConfirm: (message) => ipcRenderer.invoke("show-confirm", message),
 
-contextBridge.exposeInMainWorld('electronAPI', {
-  navigate: (page) => ipcRenderer.send('navigate', page),
 });
+
+
+

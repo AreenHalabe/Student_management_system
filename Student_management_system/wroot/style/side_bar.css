@@ -1,9 +1,60 @@
+@font-face {
+    font-family: 'Dubai';
+    src: url('../fonts/Dubai-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Dubai';
+    src: url('../fonts/Dubai-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Dubai';
+    src: url('../fonts/Dubai-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Dubai';
+    src: url('../fonts/Dubai-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+
+
+
+
+.head-of-sidbar{
+    font-family: 'Dubai', sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 2rem;
+}
+.sub-titel{
+    font-family: 'Dubai', sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 18px;
+}
+
+
 body {
     margin: 0;
     height: 100vh;
     overflow-y: auto;
     direction: rtl; /* Ensures RTL layout */
     text-align: right;
+}
+.title{
+    font-family: 'Dubai', sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    color: #343A40;
 }
 
 .content{
@@ -14,7 +65,8 @@ body {
 }
   
 .sub_content{
-    width: 90%;
+    width: 95%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -52,7 +104,14 @@ a{
     border-radius: 20px;
 }
   
-  
+a > span{
+    font-family: 'Dubai', sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+}
+
+
 .sidebar a.active {
     background-color: #ECE6F0;
     color: #3B3E7C;

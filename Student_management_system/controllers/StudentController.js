@@ -26,7 +26,7 @@ export const AllStudentsByClassAndSection = async(req , res)=>{
                 class : classs ,
                 section : section
             }
-        );
+        ).sort({ name: 1 });
 
         
         if(students.length != 0){
@@ -100,6 +100,7 @@ export const UpdateStudent = async(req,res)=>{
                 motherPhone : motherPhone
             }
         );
+
         if (UpdateStudent.modifiedCount != 0) {
             return res.status(StatusCode.Ok).send({message:"تم التحديث بنجاح"});
         }

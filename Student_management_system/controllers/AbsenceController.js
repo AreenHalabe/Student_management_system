@@ -1,6 +1,7 @@
 import { body, query } from "express-validator";
 import { StatusCode } from "../HTTPSStatusCode/StatusCode.js";
 import { Absence } from "../models/Absence.js";
+import { Student } from "../models/student.js";
 
 
 export const GetStudnetAbsence  = async(req,res)=>{
@@ -42,7 +43,8 @@ export const CreateStudentAbsence = async (req, res) => {
 
     try {
         const today = new Date();
-        const localDateString = today.toISOString().split('T')[0]; // "YYYY-MM-DD"
+
+        const localDateString = today.toLocaleDateString('en-CA'); // "YYYY-MM-DD"
 
         const existingAbsences = await Absence.find({
             student: { $in: studentIds },
@@ -57,9 +59,20 @@ export const CreateStudentAbsence = async (req, res) => {
         }));
 
 
+        
+
+
         if (newAbsences.length > 0) {
             await Absence.insertMany(newAbsences);
-            res.status(StatusCode.Ok).send({message: 'تم إضافة الغياب للطالبات'});
+            const students = await populateStudent(newAbsences);
+            res.status(StatusCode.Ok).send(
+                {
+                    message: 'تم إضافة الغياب للطالبات',
+                    students,
+                    localDateString
+                }
+                
+            );
         } else {
             res.status(StatusCode.Ok).send({message: 'كل الطالبات المحددات موجودة بالفعل في قائمة الغياب لهذا اليوم.'});
         }
@@ -79,7 +92,7 @@ export const GetAbsenceByDate = async(req , res)=>{
             return res.status(400).send({ message: "Invalid date format." });
         }
 
-        const localDateString = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+        const localDateString = date.toLocaleDateString('en-CA'); // "YYYY-MM-DD"
         try{
             const absences =await Absence.aggregate([
                 {
@@ -109,7 +122,7 @@ export const GetAbsenceByDate = async(req , res)=>{
             ]);
 
             if(absences.length==0){
-                return res.status(StatusCode.Ok).send({message:`لا يوجد غياب للطلاب ب هذا التاريخ(${dateString})`});
+                return res.status(StatusCode.Ok).send({message:`لا يوجد غياب للطلاب ب هذا التاريخ (${dateString})`});
             }
             
 
@@ -129,7 +142,7 @@ export const GetAbsenceByClassAndSection = async(req , res)=>{
             return res.status(400).send({ message: "Invalid date format." });
         }
 
-        const localDateString = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+        const localDateString = date.toLocaleDateString('en-CA'); // "YYYY-MM-DD"
 
         const sectionInt = parseInt(section, 10);
 
@@ -165,7 +178,7 @@ export const GetAbsenceByClassAndSection = async(req , res)=>{
             ]);
 
             if(absences.length==0){
-                return res.status(StatusCode.Ok).send({message:`لا يوجد غياب للطلاب ب هذا التاريخ(${dateString}) للصف (${classs}) شعبة(${section})`});
+                return res.status(StatusCode.Ok).send({message:`لا يوجد غياب للطلاب ب هذا التاريخ (${dateString}) للصف (${classs}) شعبة(${section})`});
             }
     
             res.status(StatusCode.Ok).send(absences);
@@ -175,3 +188,38 @@ export const GetAbsenceByClassAndSection = async(req , res)=>{
         }
 }
     
+
+
+async function populateStudent(newAbsences){
+    let studentIds =[];
+    studentIds = newAbsences.map(absence => absence.student);
+    try{
+        const studentList = await Student.find({ _id: { $in: studentIds } });
+
+       const students = removeMiddleNames(studentList);
+        return students;
+    }
+    catch(e){
+        console.error(e);
+    }
+   
+}
+
+
+function removeMiddleNames(students) {
+    return students.map(student => {
+        const parts = student.name.trim().split(" ");
+        if (parts.length >= 5) {
+            return {
+                name: `${parts[0]} ${parts[parts.length - 2]} ${parts[parts.length - 1]}`,
+                fatherPhone: student.fatherPhone
+            };
+        } else if (parts.length >= 2) {
+            return {
+                name: `${parts[0]} ${parts[parts.length - 1]}`,
+                fatherPhone: student.fatherPhone
+            };
+        }
+        return student;
+    });
+}
