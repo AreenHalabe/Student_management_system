@@ -2,7 +2,6 @@ function collectData(){
     const StartDate = document.getElementById('Sdate').value.trim();
     const EndDate = document.getElementById('Edate').value.trim();
     AbsenceByDatee(StartDate , EndDate);
-
 }
 
 
@@ -49,54 +48,6 @@ function OnLoad() {
 }
 
 
-
-
-async function AbsenceByDate(date) {
-    const url=`http://localhost:3000/student/absence/by/date?dateString=${date}`;
-    try{
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const absences = await response.json();
-        let tableBody = document.getElementById('students-table');
-        
-        tableBody.innerHTML = ''; 
-
-        if(absences.length > 0){
-            InsertDataInTable(absences);
-        }
-        else{
-            tableBody.innerHTML = `<tr><td colspan="4">${absences.message}</td></tr>`;
-        }
-    }
-    catch(e){
-        document.getElementById('students-table').innerHTML = `<tr><td colspan="5" style="color: red;">خطأ في الأتصال في الخادم</td></tr>`;
-    }
-}
-
-async function AbsenceByDateAndClassAndSection(date , classs , section) {
-    const url=`http://localhost:3000/student/absence/date/class/section?dateString=${date}&classs=${classs}&section=${section}`;
-
-    try{
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const absences = await response.json();
-        let tableBody = document.getElementById('students-table');
-        tableBody.innerHTML = ''; 
-        if(absences.length > 0){
-            InsertDataInTable(absences);
-        }
-        else{
-            tableBody.innerHTML = `<tr><td colspan="4">${absences.message}</td></tr>`;
-        }
-    }
-    catch(e){
-        document.getElementById('students-table').innerHTML = `<tr><td colspan="5" style="color: red;">خطأ في الأتصال في الخادم</td></tr>`;
-    }
-}
 
 function InsertDataInTable(StudentAbsences){
     let tableBody = document.getElementById('students-table');
