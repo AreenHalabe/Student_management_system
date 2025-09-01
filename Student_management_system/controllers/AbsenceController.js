@@ -223,3 +223,84 @@ function removeMiddleNames(students) {
         return student;
     });
 }
+
+
+
+export const GetAbsenceByDatee = async(req,res)=>{
+     try {
+        const { StartDate, EndDate } = req.query;
+
+        const startDate = new Date(StartDate).toLocaleDateString('en-CA');
+        const endDate = new Date(EndDate).toLocaleDateString('en-CA');
+
+        if (startDate > endDate) {
+            return res.status(400).json({
+                errors: 'خطأ في إدخال الفترة: يجب أن يكون تاريخ نهاية الفترة بعد تاريخ البداية'
+            });
+        }
+
+        const absences = await Absence.aggregate([
+                {
+                    $match: {
+                    date: { $gte: startDate, $lte: endDate }
+                    }
+                },
+                {
+                    $lookup: {
+                    from: "students",
+                    localField: "student",
+                    foreignField: "_id",
+                    as: "student"
+                    }
+                },
+                { $unwind: "$student" },
+                {
+                    $addFields: {
+                    classOrder: {
+                        $switch: {
+                        branches: [
+                            { case: { $eq: ["$student.class", "السادس الاساسي"] }, then: 1 },
+                            { case: { $eq: ["$student.class", "السابع الاساسي"] }, then: 2 },
+                            { case: { $eq: ["$student.class", "الثامن الاساسي"] }, then: 3 },
+                            { case: { $eq: ["$student.class", "التاسع الاساسي"] }, then: 4 }
+                        ],
+                        default: 99
+                        }
+                    }
+                    }
+                },
+                {
+                    $project: {
+                    _id: 0,
+                    name: "$student.name",
+                    class: "$student.class",
+                    section: "$student.section",
+                    date: 1,
+                    classOrder: 1
+                    }
+                },
+                {
+                    $sort: {
+                    classOrder: 1,   // custom class order
+                    section: 1,
+                    date: 1,
+                    name: 1
+                    }
+                }
+        ]);
+
+
+        if (absences.length === 0) {
+            return res.status(200).json({
+                message: `لا يوجد غياب للطالبات من ( ${startDate} ) ــــــ إلى ــــــ (${endDate})`
+            });
+        }
+
+    return res.status(200).json({ StudentAbsences: absences });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'حصل خطأ أثناء جلب البيانات' });
+  }
+
+
+}

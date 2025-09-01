@@ -1,24 +1,47 @@
 function collectData(){
-    const date = document.getElementById('date').value.trim();
-    const classs = document.getElementById('class').value.trim();
-    const section = document.getElementById('section').value.trim();
+    const StartDate = document.getElementById('Sdate').value.trim();
+    const EndDate = document.getElementById('Edate').value.trim();
+    AbsenceByDatee(StartDate , EndDate);
+
+}
+
+
+async function AbsenceByDatee(StartDate , EndDate){
+    const url = `http://localhost:3000/student/absence/date?StartDate=${StartDate}&EndDate=${EndDate}`
     const messageDiv = document.getElementById('message');
     let tableBody = document.getElementById('students-table');
+    tableBody.innerHTML='';
+    messageDiv.innerHTML='';
 
-    if(date && classs && section){
-        messageDiv.innerHTML='';
-        AbsenceByDateAndClassAndSection(date , classs , section);
+    
+
+    try{
+        const response = await fetch(url);
+        const result = await response.json();
+
+        console.log(result);
+
+        if(result.StudentAbsences){
+            InsertDataInTable(result.StudentAbsences);
+        }
+        
+        else if(result.errors){
+             messageDiv.innerHTML=`<div class="alert alert-danger">${result.errors}</div>`;
+        }
+        else if(result.message){
+             tableBody.innerHTML=`<tr><td colspan="4"> ${result.message} </td></tr>`;
+            console.log(result.message);
+        }
+
     }
-    else if(date && !classs && !section){
-        messageDiv.innerHTML='';
-        AbsenceByDate(date);
+    catch(e){
+        document.getElementById('students-table').innerHTML = `<tr><td colspan="5" style="color: red;">${e.message}</td></tr>`;
     }
-    else{
-        messageDiv.innerHTML='';
-        tableBody.innerHTML = ''; 
-        messageDiv.innerHTML=`<div class="alert alert-danger">البحث يمكن أن يكون عن طريق التاريخ فقط <h2>أو</h2> عن طريق التاريخ مع الصف مع الشعبة</div>`;
-    }
+
 }
+
+
+
 
 function OnLoad() {
     const btn = document.getElementById('search-btn');
@@ -75,16 +98,16 @@ async function AbsenceByDateAndClassAndSection(date , classs , section) {
     }
 }
 
-function InsertDataInTable(absences){
+function InsertDataInTable(StudentAbsences){
     let tableBody = document.getElementById('students-table');
 
-    absences.forEach(absence=> {
+    StudentAbsences.forEach(student=> {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${absence.student.name}</td>
-            <td>${absence.student.class}</td>
-            <td>${absence.student.section}</td>
-            <td>${absence.date}</td>
+            <td>${student.name}</td>
+            <td>${student.class}</td>
+            <td>${student.section}</td>
+            <td>${student.date}</td>
         `;
         tableBody.appendChild(row);
     });
